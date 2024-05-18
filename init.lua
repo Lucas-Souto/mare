@@ -1,2 +1,2 @@
-init(3000)
+init()
 listen(20)
