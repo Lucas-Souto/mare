@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include "const.hpp"
 #include <iostream>
 
 void Server::init(int port)
@@ -23,10 +24,14 @@ void Server::init(int port)
 		
 		return;
 	}
+
+	running = true;
 }
 
 void Server::startListen(int backlog)
 {
+	if (!running) return;
+
 	if (listen(sockfd, backlog) < 0)
 	{
 		printf("Falha ao iniciar a escuta (backlog: %d)!\n", backlog, errno);
@@ -34,7 +39,6 @@ void Server::startListen(int backlog)
 		return;
 	}
 
-	running = true;
 	auto addrlen = sizeof(sockaddr);
 	int connection;
 
@@ -49,15 +53,28 @@ void Server::startListen(int backlog)
 			continue;
 		}
 
-		char buffer[100];
-		auto bytesRead = read(connection, buffer, 100);
-
-		printf("Request: %s", buffer);
-
-		std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 4\r\n\r\nOpa!";
-
-		send(connection, response.c_str(), response.size(), 0);
-
+		char buffer[BUFFER_SIZE];
+		auto bytesRead = read(connection, buffer, BUFFER_SIZE);
+		
+		if (bytesRead != -1) responseTo(connection, buffer);
+		
 		close(connection);
 	}
+}
+
+std::string buildResponse(int status, std::string contentType, std::string content)
+{
+	std::string response = "HTTP/1.1 " + std::to_string(status) + " " + statusText(status) + "\r\nContent-Type: " + contentType;
+	response += "\r\nContent-Length: " + std::to_string(content.size()) + "\r\nConnection: Closed\r\n\r\n" + content;
+
+	return response;
+}
+
+void Server::responseTo(int connection, char (&buffer)[BUFFER_SIZE])
+{
+	printf("%s", buffer);
+
+	std::string response = buildResponse(STATUS_OK, TYPE_TEXT, "Opa!");
+
+	send(connection, response.c_str(), response.size(), 0);
 }

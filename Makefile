@@ -5,13 +5,16 @@ LUA_CFLAGS = -I/usr/local/include
 LUA_LDLIBS = -L/usr/local/lib -llua -lm
 
 build: target bin/main.o bin/server.o
-	$(CC) bin/main.o bin/server.o $(CFLAGS) -o bin/build $(LUA_CFLAGS) $(LUA_LDLIBS)
+	$(CC) bin/main.o bin/server.o bin/const.o $(CFLAGS) -o bin/build $(LUA_CFLAGS) $(LUA_LDLIBS)
 
 bin/main.o: main.cpp bin/server.o
 	$(CC) -c main.cpp -o bin/main.o
 
-bin/server.o: src/server.hpp
+bin/server.o: src/server.hpp bin/const.o
 	$(CC) -c src/server.cpp -o bin/server.o
+
+bin/const.o: src/const.hpp
+	$(CC) -c src/const.cpp -o bin/const.o
 
 target:
 	mkdir -p bin
