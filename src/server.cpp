@@ -68,7 +68,7 @@ void Server::responseTo(int connection, char (&buffer)[BUFFER_SIZE])
 
 	printf("%s %s %s\n", request->method.c_str(), request->url.c_str(), request->protocol.c_str());
 
-	std::string response = HTTP::buildResponse(STATUS_OK, TYPE_TEXT, "Opa!");
+	std::string response = HTTP::buildResponse(200, "text/plain", "Opa!");
 
 	send(connection, response.c_str(), response.size(), 0);
 }

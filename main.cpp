@@ -1,12 +1,47 @@
 #include "src/server.hpp"
 
+extern "C"
+{
+	#include <lua.h>
+	#include <lualib.h>
+	#include <lauxlib.h>
+}
+
+Server* server;
+
+extern "C"
+{
+	int lInit(lua_State* L)
+	{
+		int port = lua_tointeger(L, 1);
+
+		server->init(port);
+
+		return 0;
+	}
+
+	int lListen(lua_State* L)
+	{
+		int backlog = lua_tointeger(L, 1);
+
+		server->startListen(backlog);
+
+		return 0;
+	}
+}
+
 int main()
 {
-	Server* server = new Server();
+	server = new Server();
+	lua_State* L = luaL_newstate();
 
-	server->init(8000);
-	server->startListen(10);
+	luaL_openlibs(L);
+	lua_register(L, "init", lInit);
+	lua_register(L, "listen", lListen);
+	luaL_dofile(L, "init.lua");
+
 	server->stop();
+	lua_close(L);
 
 	return 0;
 }

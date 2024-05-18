@@ -1,5 +1,6 @@
 #include "const.hpp"
 
+// Thanks to https://github.com/j-ulrich/http-status-codes-cpp
 std::string statusText(int status)
 {
 	switch (status)
