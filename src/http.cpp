@@ -27,14 +27,31 @@ std::string getText(int& index, char until, char (&buffer)[BUFFER_SIZE])
 	return result;
 }
 
-void readHeaders(HTTP* request, char (&buffer)[BUFFER_SIZE])
+void readHeaders(HTTP* request, int& index, char (&buffer)[BUFFER_SIZE])
 {
-	
+	std::string key, value;
+
+	while (index < BUFFER_SIZE)
+	{
+		if (buffer[index] == '\r' && (index + 1 < BUFFER_SIZE && buffer[index] == '\n')) return;
+
+		key = getText(index, ':', buffer);
+		value = getText(index, '\r', buffer);
+		index++;
+
+		if (key == "Content-Length") request->contentLength = std::stoi(value);
+		else if (key == "Content-Type") request->contentType = value;
+		else if (key == "Accept-Language") request->languages = value;
+	}
 }
 
-void readBody(HTTP* request, char (&buffer)[BUFFER_SIZE])
+void readBody(HTTP* request, int& index, char (&buffer)[BUFFER_SIZE])
 {
-	
+	if (request->contentLength <= 0) return;
+
+	request->body = "";
+
+	for (; index < index + request->contentLength && index < BUFFER_SIZE; index++) request->body += buffer[index];	
 }
 
 HTTP* HTTP::parse(char (&buffer)[BUFFER_SIZE])
@@ -46,8 +63,8 @@ HTTP* HTTP::parse(char (&buffer)[BUFFER_SIZE])
 	result->protocol = getText(index, '\r', buffer);
 	index++;
 
-	readHeaders(result, buffer);
-	readBody(result, buffer);
+	readHeaders(result, index, buffer);
+	readBody(result, index, buffer);
 
 	return result;
 }
