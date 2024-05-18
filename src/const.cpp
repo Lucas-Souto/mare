@@ -69,20 +69,3 @@ std::string statusText(int status)
 		default: return "";
 	}
 }
-
-std::string methodText(int method)
-{
-	switch (method)
-	{
-		case METHOD_GET: return "GET";
-		case METHOD_POST: return "POST";
-		case METHOD_PUT: return "PUT";
-		case METHOD_DELETE: return "DELETE";
-		case METHOD_HEAD: return "HEAD";
-		case METHOD_CONNECT: return "CONNECT";
-		case METHOD_OPTIONS: return "OPTIONS";
-		case METHOD_PATCH: return "PATCH";
-		case METHOD_TRACE: return "TRACE";
-		default: return "";
-	}
-}

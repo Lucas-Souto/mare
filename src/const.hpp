@@ -4,16 +4,6 @@
 static const int DEFAULT_PORT = 8000;
 static const int BUFFER_SIZE = 30720;
 
-static const int METHOD_GET = 0;
-static const int METHOD_POST = 1;
-static const int METHOD_PUT = 2;
-static const int METHOD_DELETE = 3;
-static const int METHOD_HEAD = 4;
-static const int METHOD_CONNECT = 5;
-static const int METHOD_OPTIONS = 6;
-static const int METHOD_TRACE = 7;
-static const int METHOD_PATCH = 8;
-
 static const std::string TYPE_TEXT = "text/plain";
 static const std::string TYPE_HTML = "text/html";
 static const std::string TYPE_CSS = "text/css";

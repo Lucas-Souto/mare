@@ -66,7 +66,7 @@ void Server::responseTo(int connection, char (&buffer)[BUFFER_SIZE])
 {
 	HTTP* request = HTTP::parse(buffer);
 
-	printf("%s %s %s", methodText(request->method).c_str(), request->url.c_str(), request->protocol.c_str());
+	printf("%s %s %s\n", request->method.c_str(), request->url.c_str(), request->protocol.c_str());
 
 	std::string response = HTTP::buildResponse(STATUS_OK, TYPE_TEXT, "Opa!");
 
