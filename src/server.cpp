@@ -1,5 +1,5 @@
 #include "server.hpp"
-#include "const.hpp"
+#include "http.hpp"
 #include <iostream>
 
 void Server::init(int port)
@@ -62,19 +62,13 @@ void Server::startListen(int backlog)
 	}
 }
 
-std::string buildResponse(int status, std::string contentType, std::string content)
-{
-	std::string response = "HTTP/1.1 " + std::to_string(status) + " " + statusText(status) + "\r\nContent-Type: " + contentType;
-	response += "\r\nContent-Length: " + std::to_string(content.size()) + "\r\nConnection: Closed\r\n\r\n" + content;
-
-	return response;
-}
-
 void Server::responseTo(int connection, char (&buffer)[BUFFER_SIZE])
 {
-	printf("%s", buffer);
+	HTTP* request = HTTP::parse(buffer);
 
-	std::string response = buildResponse(STATUS_OK, TYPE_TEXT, "Opa!");
+	printf("%s %s %s", methodText(request->method).c_str(), request->url.c_str(), request->protocol.c_str());
+
+	std::string response = HTTP::buildResponse(STATUS_OK, TYPE_TEXT, "Opa!");
 
 	send(connection, response.c_str(), response.size(), 0);
 }

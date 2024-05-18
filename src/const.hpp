@@ -1,4 +1,18 @@
 #include <iostream>
+#ifndef CONSTS_HPP
+#define CONSTS_HPP
+static const int DEFAULT_PORT = 8000;
+static const int BUFFER_SIZE = 30720;
+
+static const int METHOD_GET = 0;
+static const int METHOD_POST = 1;
+static const int METHOD_PUT = 2;
+static const int METHOD_DELETE = 3;
+static const int METHOD_HEAD = 4;
+static const int METHOD_CONNECT = 5;
+static const int METHOD_OPTIONS = 6;
+static const int METHOD_TRACE = 7;
+static const int METHOD_PATCH = 8;
 
 static const std::string TYPE_TEXT = "text/plain";
 static const std::string TYPE_HTML = "text/html";
@@ -9,6 +23,7 @@ static const std::string TYPE_PDF = "application/pdf";
 static const std::string TYPE_JPEG = "image/jpeg";
 static const std::string TYPE_PNG = "image/png";
 static const std::string TYPE_GIF = "image/gif";
+static const std::string TYPE_WEBP = "image/webp";
 static const std::string TYPE_MPEG = "audio/mpeg";
 static const std::string TYPE_OGG = "audio/ogg";
 static const std::string TYPE_MP4 = "video/mp4";
@@ -81,3 +96,5 @@ static const int STATUS_NOTEXTENDED = 510;
 static const int STATUS_NETWORKAUTHENTICATIONREQUIRED = 511;
 
 std::string statusText(int status);
+std::string methodText(int method);
+#endif
