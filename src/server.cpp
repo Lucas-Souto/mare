@@ -67,13 +67,53 @@ void Server::addRoute(Route* route)
 	routes.push_back(route);
 }
 
-Route* Server::findMatchingRoute(std::string path)
+Route* Server::findMatchingRoute(std::string url)
 {
+	int match = 0, lastMatch = 0;// Quantidade de subrotas que deram match
 	Route* result = nullptr;
+	std::string path[MAX_DIRECTORIES];
+
+	Route::buildPath(url, path);
 
 	for (Route* route : this->routes)
 	{
-		
+		if (path[0] == "/")
+		{
+			if (route->path[0] == "/")
+			{
+				result = route;
+
+				break;
+			}
+		}
+		else for (int i = 0; i < MAX_DIRECTORIES; i++)
+		{
+			if (path[i] == "" || route->path[i] == "")
+			{
+				match = 0;
+
+				continue;
+			}
+			else
+			{
+				if (path[i] == route->path[i])				
+				{
+					match++;
+
+					if (match > lastMatch)
+					{
+						lastMatch = match;
+						result = route;
+					}
+				}
+				else
+				{
+					match = 0;
+					
+					continue;
+				}
+			}
+		}
 	}
 
 	return result;
@@ -86,8 +126,10 @@ void Server::responseTo(int connection, char (&buffer)[BUFFER_SIZE])
 	printf("%s %s %s\n", request->method.c_str(), request->url.c_str(), request->protocol.c_str());
 
 	Route* route = findMatchingRoute(request->url);
+	std::string response;
 
-	std::string response = HTTP::buildResponse(200, "text/plain", "Opa!");
+	if (route != nullptr) response = HTTP::buildResponse(200, "text/plain", "Opa!");
+	else response = HTTP::buildResponse(404, "text/plain", "404!");
 
 	send(connection, response.c_str(), response.size(), 0);
 }

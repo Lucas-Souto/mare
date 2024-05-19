@@ -1,38 +1,46 @@
 #include "route.hpp"
 
-Route::Route(std::string path)
+Route::Route(std::string url)
 {
-	printf("Criando rota \"%s\"...\n", path.c_str());
+	printf("Criando rota \"%s\"...\n", url.c_str());
+	buildPath(url, this->path);
+}
 
+FileRoute::FileRoute(std::string url, int callback) : Route(url)
+{
+	this->callback = callback;
+}
+
+AssetRoute::AssetRoute(std::string url, std::string directory) : Route(url)
+{
+	this->directory = directory;
+}
+
+void Route::buildPath(std::string url, std::string (&path)[MAX_DIRECTORIES])
+{
 	int pathIndex = 0, start = 0, size = 1;
-	int length = path.size();
-	this->path[pathIndex] = "/";
-
-	if (path.size() > 1)
+	int length = url.size();
+	path[pathIndex] = "/";
+	
+	if (url.size() > 1)
 	{
 		for (int i = 1; i < length; i++)
 		{
 			size++;
 
-			if (path[i] == '/' || i == length - 1)
+			if (url[i] == '/' || i == length - 1 || url[i] == '?')
 			{
-				if (i == length - 1 && path[i] != '/') size++;
+				if (i == length - 1 && url[i] != '/') size++;
 
-				this->path[pathIndex] = path.substr(start, size - 1);
+				path[pathIndex] = url.substr(start, size - 1);
 				start = i;
 				size = 1;
 				pathIndex++;
 			}
+
+			if (pathIndex >= MAX_DIRECTORIES || url[i] == '?') break;
 		}
 	}
-}
 
-FileRoute::FileRoute(std::string path, int callback) : Route(path)
-{
-	this->callback = callback;
-}
-
-AssetRoute::AssetRoute(std::string path, std::string directory) : Route(path)
-{
-	this->directory = directory;
+	for (; pathIndex < MAX_DIRECTORIES; pathIndex++) path[pathIndex] = "";
 }

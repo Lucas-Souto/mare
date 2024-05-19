@@ -32,6 +32,6 @@ private:
 	sockaddr_in sockaddr;
 	bool running;
 
-	Route* findMatchingRoute(std::string path);
+	Route* findMatchingRoute(std::string url);
 	void responseTo(int connection, char (&buffer)[BUFFER_SIZE]);
 };
