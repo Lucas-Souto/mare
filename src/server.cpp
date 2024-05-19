@@ -62,11 +62,30 @@ void Server::startListen(int backlog)
 	}
 }
 
+void Server::addRoute(Route* route)
+{
+	routes.push_back(route);
+}
+
+Route* Server::findMatchingRoute(std::string path)
+{
+	Route* result = nullptr;
+
+	for (Route* route : this->routes)
+	{
+		
+	}
+
+	return result;
+}
+
 void Server::responseTo(int connection, char (&buffer)[BUFFER_SIZE])
 {
 	HTTP* request = HTTP::parse(buffer);
 
 	printf("%s %s %s\n", request->method.c_str(), request->url.c_str(), request->protocol.c_str());
+
+	Route* route = findMatchingRoute(request->url);
 
 	std::string response = HTTP::buildResponse(200, "text/plain", "Opa!");
 
