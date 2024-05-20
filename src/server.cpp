@@ -1,6 +1,13 @@
 #include "server.hpp"
 #include "http.hpp"
-#include <iostream>
+#include "lua.hpp"
+
+Server* Server::instance = nullptr;
+
+Server::Server()
+{
+	Server::instance = this;
+}
 
 void Server::init(int port)
 {
@@ -67,11 +74,10 @@ void Server::addRoute(Route* route)
 	routes.push_back(route);
 }
 
-Route* Server::findMatchingRoute(std::string url)
+Route* Server::findMatchingRoute(std::string url, std::string (&path)[MAX_DIRECTORIES])
 {
 	int match = 0, lastMatch = 0;// Quantidade de subrotas que deram match
 	Route* result = nullptr;
-	std::string path[MAX_DIRECTORIES];
 
 	Route::buildPath(url, path);
 
@@ -124,12 +130,18 @@ void Server::responseTo(int connection, char (&buffer)[BUFFER_SIZE])
 	HTTP* request = HTTP::parse(buffer);
 
 	printf("%s %s %s\n", request->method.c_str(), request->url.c_str(), request->protocol.c_str());
-
-	Route* route = findMatchingRoute(request->url);
+	
+	Route* route = findMatchingRoute(request->url, request->path);
 	std::string response;
+	bool error404 = route == nullptr;
 
-	if (route != nullptr) response = HTTP::buildResponse(200, "text/plain", "Opa!");
-	else response = HTTP::buildResponse(404, "text/plain", "404!");
+	if (!error404)
+	{
+		if (route->getType() == 'f') runCallback(L, (FileRoute*)route, request);
+		else {/* TODO: separar o arquivo para enviar a response */}
+	}
+	
+	if (error404) response = HTTP::buildResponse(404, "text/plain", "404!"); // TODO: Puxar função response ou usar a padrão
 
 	send(connection, response.c_str(), response.size(), 0);
 }

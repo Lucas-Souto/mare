@@ -12,8 +12,20 @@ Este framework não foi planejado para sites como redes sociais ou sites que req
 - Sites que simulam interação com back-end.
 - Jogos de enigma baseados na web.
 
-# Veja quem mais usa
+# Exemplos
 ...
 
 # Quer contribuir com o projeto?
-...
+Se você tem algo para aprender ou compartilhar com o projeto, sinta-se livre para fazer um pull request:
+
+## 1.Baixe o código fonte:
+```sh
+> git clone https://github.com/Lucas-Souto/mare.git
+```
+
+## 2.Faça suas alterações
+Siga o [guia_aqui] e compile o servidor com o uso do clang++ 18+ ou g++ 13+.
+```sh
+> make
+> make clean build
+```

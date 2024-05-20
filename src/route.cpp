@@ -8,11 +8,13 @@ Route::Route(std::string url)
 
 FileRoute::FileRoute(std::string url, int callback) : Route(url)
 {
+	this->type = 'f';
 	this->callback = callback;
 }
 
 AssetRoute::AssetRoute(std::string url, std::string directory) : Route(url)
 {
+	this->type = 'a';
 	this->directory = directory;
 }
 
@@ -41,6 +43,7 @@ void Route::buildPath(std::string url, std::string (&path)[MAX_DIRECTORIES])
 			if (pathIndex >= MAX_DIRECTORIES || url[i] == '?') break;
 		}
 	}
+	else pathIndex++;
 
 	for (; pathIndex < MAX_DIRECTORIES; pathIndex++) path[pathIndex] = "";
 }
