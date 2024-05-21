@@ -7,7 +7,7 @@
 #include <list>
 #include "const.hpp"
 #include "route.hpp"
-#include "convert.hpp"
+#include "response.hpp"
 
 extern "C"
 {
@@ -19,6 +19,7 @@ class Server
 public:
 	lua_State* L;
 	std::list<Route*> routes;
+	std::string page404 = "<h1>Error 404</h1><p>Page not found!</p>";
 
 	Server();
 

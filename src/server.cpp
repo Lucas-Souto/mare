@@ -15,7 +15,7 @@ void Server::init(int port)
 
 	if (sockfd == -1)
 	{
-		printf("Falha ao criar o socket!\n", errno);
+		printf("Falha ao criar o socket!\n");
 		return;
 	}
 
@@ -27,10 +27,11 @@ void Server::init(int port)
 
 	if (bind(sockfd, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) < 0)
 	{
-		printf("Falha ao anexar o socket na porta %d!\n", port, errno);
+		printf("Falha ao anexar o socket na porta %d!\n", port);
 		
 		return;
 	}
+	else printf("Socket aberto na porta %d!\n", port);
 
 	running = true;
 }
@@ -41,7 +42,7 @@ void Server::startListen(int backlog)
 
 	if (listen(sockfd, backlog) < 0)
 	{
-		printf("Falha ao iniciar a escuta (backlog: %d)!\n", backlog, errno);
+		printf("Falha ao iniciar a escuta (backlog: %d)!\n", backlog);
 
 		return;
 	}
@@ -55,7 +56,7 @@ void Server::startListen(int backlog)
 		
 		if (connection < 0)
 		{
-			printf("Erro ao aceitar a conexão!\n", errno);
+			printf("Erro ao aceitar a conexão!\n");
 
 			continue;
 		}
@@ -137,11 +138,33 @@ void Server::responseTo(int connection, char (&buffer)[BUFFER_SIZE])
 
 	if (!error404)
 	{
-		if (route->getType() == 'f') runCallback(L, (FileRoute*)route, request);
-		else {/* TODO: separar o arquivo para enviar a response */}
+		if (route->getType() == 'f')
+		{
+			Response* re = runCallback(L, (FileRoute*)route, request);
+			
+			if (re != nullptr) response = HTTP::buildResponse(re->status, re->contentType, re->body);
+			else if (re->contentType == "text/html") error404 = true;
+			else response = HTTP::buildResponse(404, "text/plain", "404");
+		}
+		else
+		{
+			std::string file = ((AssetRoute*)route)->directory + "/";
+			
+			for (int i = 0; i < MAX_DIRECTORIES; i++)
+			{
+				if (request->path[i] == "") break;
+				else if (request->path[i] != route->path[i]) file += request->path[i];
+			}
+			
+			const char* fileC = file.c_str();
+			std::string base64 = toBase64(fileC);
+
+			if (base64 == "") response = HTTP::buildResponse(404, "text/plain", "404");
+			else response = HTTP::buildResponse(200, getContentType(fileC), base64);
+		}
 	}
 	
-	if (error404) response = HTTP::buildResponse(404, "text/plain", "404!"); // TODO: Puxar função response ou usar a padrão
+	if (error404) response = HTTP::buildResponse(404, "text/html", page404);
 
 	send(connection, response.c_str(), response.size(), 0);
 }

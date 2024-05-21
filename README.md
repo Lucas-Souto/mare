@@ -24,7 +24,7 @@ Se você tem algo para aprender ou compartilhar com o projeto, sinta-se livre pa
 ```
 
 ## 2.Faça suas alterações
-Siga o [guia_aqui] e compile o servidor com o uso do clang++ 18+ ou g++ 13+.
+Siga o [guia_aqui] e compile o servidor com o uso do clang++ mais recente.
 ```sh
 > make
 > make clean build

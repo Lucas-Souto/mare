@@ -53,6 +53,13 @@ extern "C"
 	{
 		if (!Server::get()->isRunning()) return 0;
 
+		if (lua_isstring(L, 1))
+		{
+			std::string page(lua_tostring(L, 1));
+			Server::get()->page404 = page;
+		}
+		else luaL_argerror(L, 1, "\"page\" precisa ser uma string!");
+
 		return 0;
 	}
 
@@ -75,6 +82,22 @@ extern "C"
 
 		return 0;
 	}
+
+	int lToBase64(lua_State* L)
+	{
+		if (lua_isstring(L, 1)) lua_pushstring(L, toBase64(lua_tostring(L, 1)).c_str());
+		else luaL_argerror(L, 1, "\"path\" precisa ser uma string!");
+
+		return 1;
+	}
+
+	int lRender(lua_State* L)
+	{
+		if (lua_isstring(L, 1)) lua_pushstring(L, render(lua_tostring(L, 1)).c_str());
+		else luaL_argerror(L, 1, "\"path\" precisa ser uma string!");
+
+		return 1;
+	}
 }
 
 void createLState(Server* server)
@@ -87,9 +110,11 @@ void createLState(Server* server)
 	lua_register(server->L, "route", lRoute);
 	lua_register(server->L, "route404", lRoute404);
 	lua_register(server->L, "maskroute", lMaskRoute);
+	lua_register(server->L, "tobase64", lToBase64);
+	lua_register(server->L, "render", lRender);
 }
 
-void runCallback(lua_State* L, FileRoute* route, HTTP* request)
+Response* runCallback(lua_State* L, FileRoute* route, HTTP* request)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, route->callback);
 	lua_newtable(L);
@@ -128,13 +153,38 @@ void runCallback(lua_State* L, FileRoute* route, HTTP* request)
 	lua_pushstring(L, "body");
 	lua_pushstring(L, request->body.c_str());
 	lua_settable(L, -3);
-	// TODO: criar e setar as cfunctions para enviar para o callback
 
-	if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+	if (lua_pcall(L, 1, 1, 0) != LUA_OK)
 	{
 		printf("Falha ao chamar o callback: %s\n", lua_tostring(L, -1));
 		lua_pop(L, 1);
 
-		return;
+		return nullptr;
 	}
+
+	if (lua_istable(L, -1))
+	{
+		Response* response = new Response();
+
+		lua_getfield(L, -1, "status");
+
+		response->status = lua_tointeger(L, -1);
+
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "content_type");
+
+		response->contentType = lua_tostring(L, -1);
+
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "body");
+
+		response->body = lua_tostring(L, -1);
+
+		lua_pop(L, 1);
+		lua_pop(L, 1);
+
+		return response;
+	}
+	
+	return nullptr;
 }
