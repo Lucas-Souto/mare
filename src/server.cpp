@@ -157,10 +157,10 @@ void Server::responseTo(int connection, char (&buffer)[BUFFER_SIZE])
 			}
 			
 			const char* fileC = file.c_str();
-			std::string base64 = toBase64(fileC);
+			std::string body = getBody(fileC);
 
-			if (base64 == "") response = HTTP::buildResponse(404, "text/plain", "404");
-			else response = HTTP::buildResponse(200, getContentType(fileC), base64);
+			if (body == "") response = HTTP::buildResponse(404, "text/plain", "404");
+			else response = HTTP::buildResponse(200, getContentType(fileC), body);
 		}
 	}
 	

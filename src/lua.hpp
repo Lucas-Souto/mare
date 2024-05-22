@@ -14,7 +14,7 @@ extern "C"
 	int lRoute(lua_State* L);
 	int lMaskRoute(lua_State* L);
 	int lRoute404(lua_State* L);
-	int lToBase64(lua_State* L);
+	int lGetBody(lua_State* L);
 	int lRender(lua_State* L);
 }
 

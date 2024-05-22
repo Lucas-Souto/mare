@@ -91,6 +91,23 @@ std::string toBase64(const char* filePath)
 
 	return output;
 }
+std::string readContent(const char* filePath)
+{
+	std::string output = "";
+
+	return output;
+}
+std::string getBody(const char* filePath)
+{
+	std::filesystem::path path = filePath;
+	std::string ext(path.extension());
+	bool isText = ext == ".css" || ext == ".csv" || ext == ".html" || ext == ".htm" || ext == ".ics" || ext == ".js"
+		|| ext == ".mjs" || ext == ".txt" || ext == ".xml" || ext == ".json" || ext == ".jsonld" || ext == ".xhtml";
+	
+	std::string output = isText ? readContent(filePath) : toBase64(filePath);
+
+	return output;
+}
 
 std::string render(const char* filePath)
 {

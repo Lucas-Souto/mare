@@ -83,9 +83,9 @@ extern "C"
 		return 0;
 	}
 
-	int lToBase64(lua_State* L)
+	int lGetBody(lua_State* L)
 	{
-		if (lua_isstring(L, 1)) lua_pushstring(L, toBase64(lua_tostring(L, 1)).c_str());
+		if (lua_isstring(L, 1)) lua_pushstring(L, getBody(lua_tostring(L, 1)).c_str());
 		else luaL_argerror(L, 1, "\"path\" precisa ser uma string!");
 
 		return 1;
@@ -110,7 +110,7 @@ void createLState(Server* server)
 	lua_register(server->L, "route", lRoute);
 	lua_register(server->L, "route404", lRoute404);
 	lua_register(server->L, "maskroute", lMaskRoute);
-	lua_register(server->L, "tobase64", lToBase64);
+	lua_register(server->L, "getbody", lGetBody);
 	lua_register(server->L, "render", lRender);
 }
 

@@ -13,6 +13,8 @@ public:
 
 std::string getContentType(const char* filePath);
 std::string toBase64(const char* filePath);
+std::string readContent(const char* filePath);
+std::string getBody(const char* filePath);
 
 std::string render(const char* filePath);
 #endif
