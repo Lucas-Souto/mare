@@ -1,5 +1,10 @@
 #include "response.hpp"
 
+HTML::HTML(const char* id, std::string content)
+{
+	
+}
+
 std::string getContentType(const char* filePath)
 {
 	std::filesystem::path path = filePath;

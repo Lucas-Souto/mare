@@ -125,6 +125,13 @@ extern "C"
 
 	int lElement(lua_State* L)
 	{
+		if (lua_isstring(L, 1))
+		{
+			if (lua_isstring(L, 2)) Server::get()->elements.push_back(new HTML(lua_tostring(L, 1), getBody(lua_tostring(L, 2))));
+			else luaL_argerror(L, 2, "\"path\" precisa ser uma string!");
+		}
+		else luaL_argerror(L, 1, "\"tag\" precisa ser uma string!");
+
 		return 0;
 	}
 }

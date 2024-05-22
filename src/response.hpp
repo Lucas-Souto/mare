@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <list>
 
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
@@ -14,8 +15,11 @@ public:
 class HTML
 {
 public:
+	char* id;
+	std::list<std::string> pieces;
 
-}
+	HTML(const char* id, std::string content);
+};
 
 std::string getContentType(const char* filePath);
 std::string getBody(const char* filePath);
