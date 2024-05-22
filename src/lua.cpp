@@ -93,10 +93,39 @@ extern "C"
 
 	int lRender(lua_State* L)
 	{
-		if (lua_isstring(L, 1)) lua_pushstring(L, render(lua_tostring(L, 1)).c_str());
+		if (lua_isstring(L, 1))
+		{
+			const char* path = lua_tostring(L, 1);
+
+			if (lua_istable(L, 2))
+			{
+				int length = lua_rawlen(L, 2);
+				const char* keys[length];
+				const char* values[length];
+
+				lua_pushnil(L);
+
+				for (int i = 0; lua_next(L, 2) != 0; i++)	
+				{
+					keys[i] = lua_tostring(L, -2);
+					values[i] = lua_tostring(L, -1);
+
+					lua_pop(L, 1);
+				}
+
+				lua_pop(L, 1);
+				lua_pushstring(L, render(path, keys, values, length).c_str());
+			}
+			else luaL_argerror(L, 2, "\"data\" precisa ser uma tabela!");
+		}
 		else luaL_argerror(L, 1, "\"path\" precisa ser uma string!");
 
 		return 1;
+	}
+
+	int lElement(lua_State* L)
+	{
+		return 0;
 	}
 }
 
@@ -112,6 +141,7 @@ void createLState(Server* server)
 	lua_register(server->L, "maskroute", lMaskRoute);
 	lua_register(server->L, "getbody", lGetBody);
 	lua_register(server->L, "render", lRender);
+	lua_register(server->L, "element", lElement);
 }
 
 Response* runCallback(lua_State* L, FileRoute* route, HTTP* request)

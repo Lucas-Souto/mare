@@ -19,6 +19,7 @@ class Server
 public:
 	lua_State* L;
 	std::list<Route*> routes;
+	std::list<HTML*> pages, elements;
 	std::string page404 = "<h1>Error 404</h1><p>Page not found!</p>";
 
 	Server();

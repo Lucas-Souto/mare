@@ -16,6 +16,7 @@ extern "C"
 	int lRoute404(lua_State* L);
 	int lGetBody(lua_State* L);
 	int lRender(lua_State* L);
+	int lElement(lua_State* L);
 }
 
 void createLState(Server* server);

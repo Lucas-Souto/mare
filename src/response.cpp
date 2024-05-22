@@ -99,7 +99,7 @@ std::string getBody(const char* filePath)
 	return output;
 }
 
-std::string render(const char* filePath)
+std::string render(const char* filePath, const char* tKeys[], const char* tValues[], int tSize)
 {
 	std::string output = "";
 	
