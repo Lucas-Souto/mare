@@ -85,26 +85,16 @@ std::string getContentType(const char* filePath)
 
 	else return "text/plain";
 }
-std::string toBase64(const char* filePath)
-{
-	std::string output = "";
-
-	return output;
-}
-std::string readContent(const char* filePath)
-{
-	std::string output = "";
-
-	return output;
-}
 std::string getBody(const char* filePath)
 {
-	std::filesystem::path path = filePath;
-	std::string ext(path.extension());
-	bool isText = ext == ".css" || ext == ".csv" || ext == ".html" || ext == ".htm" || ext == ".ics" || ext == ".js"
-		|| ext == ".mjs" || ext == ".txt" || ext == ".xml" || ext == ".json" || ext == ".jsonld" || ext == ".xhtml";
-	
-	std::string output = isText ? readContent(filePath) : toBase64(filePath);
+	std::string output = "";
+	std::ifstream file(filePath);
+
+	if (file.is_open())
+	{
+		output.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+		file.close();
+	}
 
 	return output;
 }
