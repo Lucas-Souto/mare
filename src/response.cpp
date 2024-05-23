@@ -104,9 +104,11 @@ std::string getBody(const char* filePath)
 	return output;
 }
 
-std::string render(const char* filePath, const char* tKeys[], const char* tValues[], int tSize)
+std::string render(const char* filePath, CharDict* dict)
 {
 	std::string output = "";
-	
+	CharDict* current = dict;
+
+	delete dict;
 	return output;
 }

@@ -15,14 +15,22 @@ public:
 class HTML
 {
 public:
-	char* id;
+	const char* id;
 	std::list<std::string> pieces;
 
 	HTML(const char* id, std::string content);
 };
 
+class CharDict
+{
+public:
+	const char* key;
+	const char* value;
+	CharDict* next;
+};
+
 std::string getContentType(const char* filePath);
 std::string getBody(const char* filePath);
 
-std::string render(const char* filePath, const char* tKeys[], const char* tValues[], int tSize);
+std::string render(const char* filePath, CharDict* dict);
 #endif

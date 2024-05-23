@@ -91,6 +91,41 @@ extern "C"
 		return 1;
 	}
 
+	CharDict* fillTable(lua_State* L, int index, std::string prefix, CharDict* previous)
+	{
+		CharDict* first = nullptr;
+
+		lua_pushnil(L);
+
+		while (lua_next(L, index) != 0)	
+		{
+			std::string key(lua_tostring(L, -2));
+			
+			if (lua_istable(L, -1)) fillTable(L, lua_gettop(L), prefix + key + ".", previous);
+			else
+			{
+				if (previous != nullptr)
+				{
+					previous->next = new CharDict();
+					previous = previous->next;
+				}
+				else
+				{
+					previous = new CharDict();
+					first = previous;
+				}
+
+				previous->key = (prefix + key).c_str();
+				previous->value = lua_tostring(L, -1);
+				previous->next = nullptr;
+			}
+
+			lua_pop(L, 1);
+		}
+
+		return first;
+	}
+
 	int lRender(lua_State* L)
 	{
 		if (lua_isstring(L, 1))
@@ -99,22 +134,9 @@ extern "C"
 
 			if (lua_istable(L, 2))
 			{
-				int length = lua_rawlen(L, 2);
-				const char* keys[length];
-				const char* values[length];
-
-				lua_pushnil(L);
-
-				for (int i = 0; lua_next(L, 2) != 0; i++)	
-				{
-					keys[i] = lua_tostring(L, -2);
-					values[i] = lua_tostring(L, -1);
-
-					lua_pop(L, 1);
-				}
-
-				lua_pop(L, 1);
-				lua_pushstring(L, render(path, keys, values, length).c_str());
+				CharDict* dict = fillTable(L, 2, "", nullptr);
+				
+				lua_pushstring(L, render(path, dict).c_str());
 			}
 			else luaL_argerror(L, 2, "\"data\" precisa ser uma tabela!");
 		}

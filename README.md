@@ -1,4 +1,4 @@
-# Maré
+# Maré [Protótipo]
 **Maré** é um framework para a criação de páginas front-end com a ajuda da lua.<br>
 Com ela, você poderá criar páginas com reutilização de componentes e preenchimento automático de conteúdo.<br>
 
