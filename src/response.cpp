@@ -1,8 +1,66 @@
 #include "response.hpp"
+#include "server.hpp"
+
+static const char VAR_INDICATOR = '$';
 
 HTML::HTML(const char* id, std::string content)
 {
-	
+	this->id = id;
+	int length = content.size();
+	bool readingVar = false;
+	std::string current = "";
+
+	for (int i = 0; i < length; i++)
+	{
+		if (content[i] == '\\' && length - 1 > i)
+		{
+			if (content[i + 1] == VAR_INDICATOR)
+			{
+				i++;
+				current += content[i];
+			}
+			else if (content[i + 1] == '\\')
+			{
+				current += content[i];
+				i++;
+			}
+		}
+		else if (content[i] == VAR_INDICATOR)
+		{
+			if (!readingVar)		
+			{
+				this->pieces.push_back(current);
+
+				current = VAR_INDICATOR;
+			}
+			else
+			{
+				this->pieces.push_back(current + VAR_INDICATOR);
+
+				current = "";
+			}
+
+			readingVar = !readingVar;
+		}
+		else current += content[i];
+	}
+
+	if (current != "") this->pieces.push_back(current);
+}
+
+CharDict::CharDict(std::string key, std::string value)
+{
+	this->key = key;
+	this->value = value;
+	this->next = nullptr;
+}
+
+std::string findValue(std::string key, CharDict* first)
+{
+	if (key == first->key) return first->value;
+	else if (first->next != nullptr) return findValue(key, first->next);
+
+	return "$NIL$";
 }
 
 std::string getContentType(const char* filePath)
@@ -104,11 +162,39 @@ std::string getBody(const char* filePath)
 	return output;
 }
 
+HTML* getHTML(const char* id, const char* filePath, std::list<HTML*> list, bool createIfNotExists)
+{
+	HTML* result = nullptr;
+
+	for (HTML* page : list)
+	{
+		if (page->id == id)
+		{
+			result = page;
+
+			break;
+		}
+	}
+
+	if (result == nullptr && createIfNotExists)
+	{
+		result = new HTML(id, getBody(filePath));
+		list.push_back(result);
+	}
+
+	return result;
+}
+
 std::string render(const char* filePath, CharDict* dict)
 {
 	std::string output = "";
-	CharDict* current = dict;
+	HTML* page = getHTML(filePath, filePath, Server::get()->pages, true);
 
-	delete dict;
+	for (std::string piece : page->pieces)
+	{
+		if (piece[0] == VAR_INDICATOR && piece[piece.size() - 1] == VAR_INDICATOR) output += findValue(piece.substr(1, piece.size() - 2), dict);
+		else output += piece;
+	}
+
 	return output;
 }

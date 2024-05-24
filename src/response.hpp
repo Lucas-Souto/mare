@@ -24,10 +24,13 @@ public:
 class CharDict
 {
 public:
-	const char* key;
-	const char* value;
+	std::string key, value;
 	CharDict* next;
+
+	CharDict(std::string key, std::string value);
 };
+
+const char* findValue(const char* key, CharDict* first);
 
 std::string getContentType(const char* filePath);
 std::string getBody(const char* filePath);
