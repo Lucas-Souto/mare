@@ -27,7 +27,9 @@ public:
 	std::string key, value;
 	CharDict* next;
 
-	CharDict(std::string key, std::string value);
+	CharDict(int size);
+
+	void set(std::string key, std::string value);
 };
 
 const char* findValue(const char* key, CharDict* first);

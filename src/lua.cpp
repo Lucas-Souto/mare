@@ -91,7 +91,23 @@ extern "C"
 		return 1;
 	}
 
-	void fillTable(lua_State* L, int index, std::string prefix, CharDict* dict)
+	int countFields(lua_State* L, int index)
+	{
+		int result = 0;
+
+		lua_pushnil(L);
+
+		while (lua_next(L, index) != 0)	
+		{
+			if (lua_istable(L, -1)) result += countFields(L, lua_gettop(L));
+			else result++;
+
+			lua_pop(L, 1);
+		}
+
+		return result;
+	}
+	CharDict* fillTable(lua_State* L, int index, std::string prefix, CharDict* dict)
 	{
 		lua_pushnil(L);
 
@@ -99,16 +115,20 @@ extern "C"
 		{
 			std::string key(lua_tostring(L, -2));
 			
-			if (lua_istable(L, -1)) fillTable(L, lua_gettop(L), prefix + key + ".", dict);
+			if (lua_istable(L, -1)) dict = fillTable(L, lua_gettop(L), prefix + key + ".", dict);
 			else
 			{
 				std::string value(lua_tostring(L, -1));
-				dict->next = new CharDict((prefix + key), value);
+
+				dict->set(prefix + key, value);
+
 				dict = dict->next;
 			}
 
 			lua_pop(L, 1);
 		}
+
+		return dict;
 	}
 
 	int lRender(lua_State* L)
@@ -119,10 +139,10 @@ extern "C"
 
 			if (lua_istable(L, 2))
 			{
-				CharDict* dict = new CharDict("", "");
+				CharDict* dict = new CharDict(countFields(L, 2));
 
 				fillTable(L, 2, "", dict);
-				lua_pushstring(L, render(path, dict->next).c_str());
+				lua_pushstring(L, render(path, dict).c_str());
 			}
 			else luaL_argerror(L, 2, "\"data\" precisa ser uma tabela!");
 		}

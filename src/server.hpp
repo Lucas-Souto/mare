@@ -31,7 +31,11 @@ public:
 	void addRoute(Route* route);
 	void stop()
 	{
-		if (running) close(sockfd);
+		if (running)
+		{
+			close(sockfd);
+			lua_close(L);
+		}
 		
 		running = false;
 	}

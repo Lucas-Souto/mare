@@ -3,12 +3,18 @@
 
 int main()
 {
-	Server* server = new Server();
+	Server* server = nullptr;
+
+	try
+	{
+		server = new Server();
+		
+		createLState(server);
+		luaL_dofile(server->L, "init.lua");
+	}
+	catch (...) { }
 	
-	createLState(server);
-	luaL_dofile(server->L, "init.lua");
-	server->stop();
-	lua_close(server->L);
+	if (server != nullptr) server->stop();
 
 	return 0;
 }

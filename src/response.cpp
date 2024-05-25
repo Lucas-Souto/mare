@@ -48,18 +48,26 @@ HTML::HTML(const char* id, std::string content)
 	if (current != "") this->pieces.push_back(current);
 }
 
-CharDict::CharDict(std::string key, std::string value)
+CharDict::CharDict(int size)
+{
+	key = "";
+	value = "";
+	
+	if (size > 1) next = new CharDict(size - 1);
+	else next = nullptr;
+}
+
+void CharDict::set(std::string key, std::string value)
 {
 	this->key = key;
 	this->value = value;
-	this->next = nullptr;
 }
 
 std::string findValue(std::string key, CharDict* first)
 {
 	if (key == first->key) return first->value;
 	else if (first->next != nullptr) return findValue(key, first->next);
-
+	
 	return "$NIL$";
 }
 
