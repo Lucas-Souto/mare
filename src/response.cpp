@@ -1,8 +1,10 @@
 #include "response.hpp"
 #include "server.hpp"
 #include <string.h>
+#include <format>
 
 static const char VAR_INDICATOR = '$';
+static const std::string KEY_CONTENT = "content";
 
 std::string getTag(int start, std::string content, int length)
 {
@@ -40,13 +42,128 @@ HTML* getHTML(const char* id, const char* filePath, std::list<HTML*> list, bool 
 	return result;
 }
 
+int getTagArgs(std::string tag, int currentIndex, std::string content, int length, CharDict* dict)
+{
+	std::string key = "", value = "";
+	bool keyReady = false, valueStart = false, readingContent = false;
+	CharDict* currentDict = dict;
+	int tagLength = tag.size();
+
+	for (; currentIndex < length; currentIndex++)
+	{
+		if (content[currentIndex] == '/' && length - 1 > currentIndex && content[currentIndex + 1] == '>')
+		{
+			currentDict->key = KEY_CONTENT;
+			currentDict->value = "";
+
+			break;
+		}
+		else if (content[currentIndex] == '>')
+		{
+			readingContent = true;
+			currentDict->key = KEY_CONTENT;
+
+			continue;
+		}
+
+		if (readingContent)
+		{
+			if (content[currentIndex] == '<' && length - 1 > currentIndex + tagLength + 1
+				&& content.substr(currentIndex, tagLength + 3) == "</" + tag + ">")
+			{
+				currentIndex += tagLength + 2;
+
+				break;
+			}
+
+			currentDict->value += content[currentIndex];
+
+			continue;
+		}
+
+		if (!keyReady)
+		{
+			if (content[currentIndex] != ' ')
+			{
+				if (key != "" && content[currentIndex] == '=') keyReady = true;
+				else key += content[currentIndex];
+			}
+			else if (key != "") keyReady = true;
+		}
+		else
+		{
+			if (!valueStart && content[currentIndex] == '"') valueStart = true;
+			else if (valueStart)
+			{
+				if (content[currentIndex] == '\\')
+				{
+					if (length - 1 > currentIndex && (content[currentIndex + 1] == '"' || content[currentIndex + 1] == '\\'))
+					{
+						currentIndex++;
+						value += content[currentIndex];
+					}
+					else value += content[currentIndex];
+				}
+				else if (content[currentIndex] == '"')
+				{
+					currentDict->set(key, value);
+
+					currentDict->next = new CharDict(0);
+					currentDict = currentDict->next;
+					key = "";
+					value = "";
+					keyReady = false;
+					valueStart = false;
+				}
+				else value += content[currentIndex];
+			}
+		}
+	}
+
+	return currentIndex;
+}
+
+int elementIntoPieces(HTML* root, std::string tag, std::list<std::string> element, int currentIndex, std::string content, int length)
+{
+	CharDict* dict = new CharDict(0);
+	currentIndex = getTagArgs(tag, currentIndex, content, length, dict);
+	
+	int start;
+	std::string add, seekingKey;
+	CharDict* currentDict;
+
+	for (std::string ePiece : element)
+	{
+		add = ePiece;
+		currentDict = dict;
+
+		while (currentDict != nullptr && currentDict->key != "")
+		{
+			start = 0;
+			seekingKey = std::format("{}{}{}", VAR_INDICATOR, currentDict->key, VAR_INDICATOR);
+			
+			while ((start = add.find(seekingKey, start)) != std::string::npos)
+			{
+				add.replace(start, currentDict->key.size() + 2, currentDict->value);
+
+				start += currentDict->value.size();
+			}
+			
+			currentDict = currentDict->next;
+		}
+
+		root->pieces.push_back(add);
+	}
+
+	return currentIndex;
+}
+
 HTML::HTML(const char* id, std::string content)
 {
 	this->id = id;
 	int length = content.size();
 	bool readingVar = false;
 	std::string current = "";
-	std::string readingTag = "";
 
 	for (int i = 0; i < length; i++)
 	{
@@ -80,47 +197,22 @@ HTML::HTML(const char* id, std::string content)
 
 			readingVar = !readingVar;
 		}
-		else if (readingTag != "")
-		{
-			if (content[i] == '/' && content[i + 1] == '>' && length - 1 > i)
-			{
-				current += content[i];
-				current += content[i + 1];
-				i++;
-				readingTag = "";
-
-				this->pieces.push_back(current);
-
-				current = "";
-			}
-			else if (content[i] == '<' && content[i + 1] == '/' && length - 1 > i + readingTag.size() + 2)
-			{
-				current += content.substr(i, 3 + readingTag.size());
-				i += 2 + readingTag.size();
-				readingTag = "";
-
-				this->pieces.push_back(current);
-
-				current = "";
-			}
-			else current += content[i];
-		}
 		else if (!readingVar && content[i] == '<' && length - 1 > i && content[i + 1] != '/')
 		{
-			readingTag = getTag(i + 1, content, length);
+			std::string readingTag = getTag(i + 1, content, length);
+			HTML* element = readingTag != "" ? getHTML(readingTag.c_str(), nullptr, Server::get()->elements, false) : nullptr;
 
-			if (readingTag != "" && getHTML(readingTag.c_str(), nullptr, Server::get()->elements, false) != nullptr)
+			if (element != nullptr)
 			{
 				this->pieces.push_back(current);
 
-				current = content.substr(i, 1 + readingTag.size());
-				i += readingTag.size();
+				current = "";
+				i = elementIntoPieces(this, readingTag, element->pieces, i + readingTag.size() + 1, content, length);
 			}
 			else
 			{
 				current += content.substr(i, 1 + readingTag.size());
 				i += readingTag.size();
-				readingTag = "";
 			}
 		}
 		else current += content[i];

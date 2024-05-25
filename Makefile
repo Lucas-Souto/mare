@@ -1,4 +1,4 @@
-CC = clang++
+CC = clang++ -std=c++20
 CFLAGS = -g -Wall
 
 LUA_CFLAGS = -I/usr/local/include
