@@ -8,7 +8,8 @@ route("/", function(request)
 		body = render("test/index.html",
 		{
 			title = "Meu título",
-			test = { number = 128, other = "sus" }
+			test = { number = 128, other = "sus" },
+			check = "false"
 		})
 	};
 end);

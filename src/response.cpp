@@ -3,7 +3,7 @@
 #include <string.h>
 #include <format>
 
-static const char VAR_INDICATOR = '$';
+static const char VAR_INDICATOR = '$', STATEMENT_INDICATOR = '#';
 static const std::string KEY_CONTENT = "content";
 
 std::string getTag(int start, std::string content, int length)
@@ -167,22 +167,17 @@ HTML::HTML(const char* id, std::string content)
 {
 	this->id = id;
 	int length = content.size();
-	bool readingVar = false;
+	bool readingVar = false, readingStatement = false;
 	std::string current = "";
 
 	for (int i = 0; i < length; i++)
 	{
 		if (content[i] == '\\' && length - 1 > i)
 		{
-			if (content[i + 1] == VAR_INDICATOR)
+			if (content[i + 1] == '\\' || content[i + 1] == VAR_INDICATOR || content[i + 1] == STATEMENT_INDICATOR)
 			{
 				i++;
 				current += content[i];
-			}
-			else if (content[i + 1] == '\\')
-			{
-				current += content[i];
-				i++;
 			}
 		}
 		else if (content[i] == VAR_INDICATOR)
@@ -201,6 +196,23 @@ HTML::HTML(const char* id, std::string content)
 			}
 
 			readingVar = !readingVar;
+		}
+		else if (content[i] == STATEMENT_INDICATOR)
+		{
+			if (!readingStatement)		
+			{
+				this->pieces.push_back(current);
+
+				current = STATEMENT_INDICATOR;
+			}
+			else
+			{
+				this->pieces.push_back(current + STATEMENT_INDICATOR);
+
+				current = "";
+			}
+
+			readingStatement = !readingStatement;
 		}
 		else if (!readingVar && content[i] == '<' && length - 1 > i && content[i + 1] != '/')
 		{
@@ -352,11 +364,22 @@ std::string render(const char* filePath, CharDict* dict)
 {
 	std::string output = "";
 	HTML* page = getHTML(filePath, filePath, Server::get()->pages, true);
+	bool doingIf = false, showIfContent = false;
 
 	for (std::string piece : page->pieces)
 	{
 		if (piece[0] == VAR_INDICATOR && piece[piece.size() - 1] == VAR_INDICATOR) output += findValue(piece.substr(1, piece.size() - 2), dict);
-		else output += piece;
+		else if (piece[0] == STATEMENT_INDICATOR)
+		{
+			if (piece == "#endif#") doingIf = false;
+			else if (piece.size() > 5 && piece[1] == 'i' && piece[2] == 'f')
+			{
+				std::string value = findValue(piece.substr(4, piece.size() - 5), dict);
+				doingIf = true;
+				showIfContent = value == "true";
+			}
+		}
+		else if (!doingIf || showIfContent) output += piece;
 	}
 
 	return output;
