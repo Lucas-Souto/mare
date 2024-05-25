@@ -45,7 +45,7 @@ HTML* getHTML(const char* id, const char* filePath, std::list<HTML*> list, bool 
 int getTagArgs(std::string tag, int currentIndex, std::string content, int length, CharDict* dict)
 {
 	std::string key = "", value = "";
-	bool keyReady = false, valueStart = false, readingContent = false;
+	bool keyReady = false, valueStart = false, readingContent = false, seekingEquals = false;
 	CharDict* currentDict = dict;
 	int tagLength = tag.size();
 
@@ -88,7 +88,15 @@ int getTagArgs(std::string tag, int currentIndex, std::string content, int lengt
 				if (key != "" && content[currentIndex] == '=') keyReady = true;
 				else key += content[currentIndex];
 			}
-			else if (key != "") keyReady = true;
+			else if (key != "")
+			{
+				keyReady = true;
+				seekingEquals = true;
+			}
+		}
+		else if (seekingEquals)
+		{
+			if (content[currentIndex] == '=') seekingEquals = false;
 		}
 		else
 		{
