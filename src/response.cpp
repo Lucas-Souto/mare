@@ -55,6 +55,7 @@ int getTagArgs(std::string tag, int currentIndex, std::string content, int lengt
 		{
 			currentDict->key = KEY_CONTENT;
 			currentDict->value = "";
+			currentIndex++;
 
 			break;
 		}
@@ -136,7 +137,6 @@ int elementIntoPieces(HTML* root, std::string tag, std::list<std::string> elemen
 	CharDict* dict = new CharDict(0);
 	currentIndex = getTagArgs(tag, currentIndex, content, length, dict);
 	
-	int start;
 	std::string add, seekingKey;
 	CharDict* currentDict;
 
@@ -147,14 +147,11 @@ int elementIntoPieces(HTML* root, std::string tag, std::list<std::string> elemen
 
 		while (currentDict != nullptr && currentDict->key != "")
 		{
-			start = 0;
-			seekingKey = std::format("{}{}{}", VAR_INDICATOR, currentDict->key, VAR_INDICATOR);
-			
-			while ((start = add.find(seekingKey, start)) != std::string::npos)
+			if (add == std::format("{}{}{}", VAR_INDICATOR, currentDict->key, VAR_INDICATOR))
 			{
-				add.replace(start, currentDict->key.size() + 2, currentDict->value);
+				add = currentDict->value;
 
-				start += currentDict->value.size();
+				break;
 			}
 			
 			currentDict = currentDict->next;
