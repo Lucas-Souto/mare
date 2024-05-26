@@ -143,8 +143,7 @@ void Server::responseTo(int connection, char (&buffer)[BUFFER_SIZE])
 			Response* re = runCallback(L, (FileRoute*)route, request);
 			
 			if (re != nullptr) response = HTTP::buildResponse(re->status, re->contentType, re->body);
-			else if (re->contentType == "text/html") error404 = true;
-			else response = HTTP::buildResponse(404, "text/plain", "404");
+			else error404 = true;
 		}
 		else
 		{
@@ -159,7 +158,7 @@ void Server::responseTo(int connection, char (&buffer)[BUFFER_SIZE])
 			const char* fileC = file.c_str();
 			std::string body = getBody(fileC);
 
-			if (body == "") response = HTTP::buildResponse(404, "text/plain", "404");
+			if (body == "") error404 = true;
 			else response = HTTP::buildResponse(200, getContentType(fileC), body);
 		}
 	}
