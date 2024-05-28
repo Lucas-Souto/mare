@@ -4,7 +4,7 @@ CFLAGS = -g -Wall
 LUA_CFLAGS = -I/usr/local/include
 LUA_LDLIBS = -L/usr/local/lib -llua -lm
 
-build: bin/main.o bin/LinkedPair.o bin/http/Route.o bin/http/utils.o
+build: bin/main.o bin/LinkedPair.o bin/http/Route.o bin/http/Message.o bin/http/utils.o
 	$(CC) $^ $(CFLAGS) -o bin/build $(LUA_CFLAGS) $(LUA_LDLIBS)
 
 bin/main.o: src/main.cpp
@@ -18,6 +18,9 @@ bin/http/utils.o: src/http/utils.hpp src/http/utils.cpp
 
 bin/http/Route.o: src/http/Route.hpp src/http/Route.cpp
 	$(CC) -c src/http/Route.cpp -o $@
+
+bin/http/Message.o: src/http/Message.hpp src/http/Message.cpp
+	$(CC) -c src/http/Message.cpp -o $@
 
 target:
 	mkdir -p bin

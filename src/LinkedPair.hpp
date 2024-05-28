@@ -12,7 +12,7 @@ public:
 	string Key, Value;
 	LinkedPair* Next;
 
-	LinkedPair(string key, string value);
+	void Set(string key, string value);
 
 	string GetValue(std::string key);
 };

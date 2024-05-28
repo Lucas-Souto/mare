@@ -36,4 +36,4 @@ list<string>* generatePath(string url)
 }
 
 Route::Route(string url, int callback) : Path(generatePath(url)), Callback(callback), Directory("") { }
-Route::Route(string url, string directory) : Path(generatePath(url)), Callback(0), Directory(directory) { }
+Route::Route(string url, string directory) : Path(generatePath(url)), Callback(-1), Directory(directory) { }

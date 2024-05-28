@@ -1,10 +1,9 @@
 #include "LinkedPair.hpp"
 
-LinkedPair::LinkedPair(string key, string value)
+void LinkedPair::Set(string key, string value)
 {
 	Key = key;
 	Value = value;
-	Next = nullptr;
 }
 
 string LinkedPair::GetValue(string key)
