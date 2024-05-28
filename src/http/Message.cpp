@@ -32,7 +32,8 @@ void readHeaders(Message* request, int &index, char (&buffer)[BUFFER_SIZE])
 		value = getText(index, '\r', buffer);
 		index++;
 
-		if (key == "Content-Length") request->ContentLength = stoi(value);
+		if (key == "Host") request->Host = value;
+		else if (key == "Content-Length") request->ContentLength = stoi(value);
 		else if (key == "Content-Type") request->ContentType = value;
 		else if (key == "Accept-Language") request->Languages = value;
 	}

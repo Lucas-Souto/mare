@@ -10,7 +10,7 @@ class LinkedPair
 {
 public:
 	string Key, Value;
-	LinkedPair* Next;
+	LinkedPair* Next = nullptr;
 
 	void Set(string key, string value);
 

@@ -12,7 +12,7 @@ class Message
 {
 public:
 	int ContentLength;
-	string Protocol, Method, URL, Languages, ContentType, Body;
+	string Protocol, Method, URL, Host, ContentType, Languages, Body;
 	Route* Target;
 
 	static Message* ParseRequest(char (&buffer)[BUFFER_SIZE]);
