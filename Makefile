@@ -4,17 +4,20 @@ CFLAGS = -g -Wall
 LUA_CFLAGS = -I/usr/local/include
 LUA_LDLIBS = -L/usr/local/lib -llua -lm
 
-build: bin/main.o bin/LinkedPair.o bin/http/utils.o
+build: bin/main.o bin/LinkedPair.o bin/http/Route.o bin/http/utils.o
 	$(CC) $^ $(CFLAGS) -o bin/build $(LUA_CFLAGS) $(LUA_LDLIBS)
 
-bin/main.o: main.cpp
-	$(CC) -c main.cpp -o $@
+bin/main.o: src/main.cpp
+	$(CC) -c src/main.cpp -o $@
 
-bin/LinkedPair.o: LinkedPair.hpp LinkedPair.cpp
-	$(CC) -c LinkedPair.cpp -o $@
+bin/LinkedPair.o: src/LinkedPair.hpp src/LinkedPair.cpp
+	$(CC) -c src/LinkedPair.cpp -o $@
 
-bin/http/utils.o: http/utils.hpp http/utils.cpp
-	$(CC) -c http/utils.cpp -o $@
+bin/http/utils.o: src/http/utils.hpp src/http/utils.cpp
+	$(CC) -c src/http/utils.cpp -o $@
+
+bin/http/Route.o: src/http/Route.hpp src/http/Route.cpp
+	$(CC) -c src/http/Route.cpp -o $@
 
 target:
 	mkdir -p bin
