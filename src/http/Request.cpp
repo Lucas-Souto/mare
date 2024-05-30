@@ -1,4 +1,4 @@
-#include "Message.hpp"
+#include "Request.hpp"
 #include "utils.hpp"
 
 string getText(int &index, const char until, char (&buffer)[BUFFER_SIZE])
@@ -20,7 +20,7 @@ string getText(int &index, const char until, char (&buffer)[BUFFER_SIZE])
 	return result;
 }
 
-void readHeaders(Message* request, int &index, char (&buffer)[BUFFER_SIZE])
+void readHeaders(Request* request, int &index, char (&buffer)[BUFFER_SIZE])
 {
 	string key, value;
 
@@ -39,7 +39,7 @@ void readHeaders(Message* request, int &index, char (&buffer)[BUFFER_SIZE])
 	}
 }
 
-void readBody(Message* request, int &index, char (&buffer)[BUFFER_SIZE])
+void readBody(Request* request, int &index, char (&buffer)[BUFFER_SIZE])
 {
 	if (request->ContentLength <= 0) return;
 
@@ -49,10 +49,10 @@ void readBody(Message* request, int &index, char (&buffer)[BUFFER_SIZE])
 	request->Body.assign(buffer + index, size);
 }
 
-Message* Message::ParseRequest(char (&buffer)[BUFFER_SIZE])
+Request* Request::ParseRequest(char (&buffer)[BUFFER_SIZE])
 {
 	int index = 0;
-	Message* request = new Message();
+	Request* request = new Request();
 	request->Method = getText(index, ' ', buffer);
 	request->URL = getText(index, ' ', buffer);
 	request->Target = new Route(request->URL, -1);
@@ -63,10 +63,4 @@ Message* Message::ParseRequest(char (&buffer)[BUFFER_SIZE])
 	readBody(request, index, buffer);
 
 	return request;
-}
-
-string Message::BuildResponse(int status, string contentType, string content)
-{
-	return "HTTP/1.1 " + to_string(status) + " " + statusText(status) + "\r\nContent-Type: " + contentType +
-		"\r\nContent-Length: " + to_string(content.size()) + "\r\nConnection: Closed\r\n\r\n" + content;
 }
