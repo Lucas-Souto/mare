@@ -4,7 +4,7 @@ CFLAGS = -g -Wall
 LUA_CFLAGS = -I/usr/local/include
 LUA_LDLIBS = -L/usr/local/lib -llua -lm
 
-INCLUDE = bin/main.o bin/Server.o bin/LinkedPair.o \
+INCLUDE = bin/main.o bin/Server.o bin/LinkedPair.o bin/HTML.o \
 	bin/http/Route.o bin/http/Request.o bin/http/utils.o \
 	bin/lua/export.o bin/lua/import.o
 
@@ -19,6 +19,9 @@ bin/Server.o: src/Server.hpp src/Server.cpp
 
 bin/LinkedPair.o: src/LinkedPair.hpp src/LinkedPair.cpp
 	$(CC) -c src/LinkedPair.cpp -o $@
+
+bin/HTML.o: src/HTML.hpp src/HTML.cpp
+	$(CC) -c src/HTML.cpp -o $@
 
 bin/http/utils.o: src/http/utils.hpp src/http/utils.cpp
 	$(CC) -c src/http/utils.cpp -o $@

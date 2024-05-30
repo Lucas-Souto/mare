@@ -1,5 +1,5 @@
-#ifndef IMPORT
-#define IMPORT
+#ifndef IMPORT_HPP
+#define IMPORT_HPP
 #include <string>
 #include "../http/Route.hpp"
 #include "../http/Request.hpp"

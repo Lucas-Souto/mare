@@ -1,5 +1,5 @@
-#ifndef EXPORT
-#define EXPORT
+#ifndef EXPORT_HPP
+#define EXPORT_HPP
 extern "C"
 {
 	#include <lua.h>

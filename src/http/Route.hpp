@@ -1,5 +1,5 @@
-#ifndef ROUTE
-#define ROUTE
+#ifndef ROUTE_HPP
+#define ROUTE_HPP
 #include <vector>
 #include <string>
 

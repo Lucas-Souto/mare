@@ -1,5 +1,5 @@
-#ifndef LINKED_PAIR
-#define LINKED_PAIR
+#ifndef LINKED_PAIR_HPP
+#define LINKED_PAIR_HPP
 #include <string>
 
 using namespace std;
@@ -9,11 +9,11 @@ static const string KEY_NOT_FOUND = "$NIL$";
 class LinkedPair
 {
 public:
-	string Key, Value;
+	string Key = "", Value = "";
 	LinkedPair* Next = nullptr;
 
 	void Set(string key, string value);
 
-	string GetValue(std::string key);
+	string GetValue(string key);
 };
 #endif

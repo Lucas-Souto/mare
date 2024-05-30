@@ -1,5 +1,5 @@
-#ifndef SERVER
-#define SERVER
+#ifndef SERVER_HPP
+#define SERVER_HPP
 #include <string>
 #include <vector>
 #include <sys/socket.h>
@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include "http/Route.hpp"
 #include "http/Request.hpp"
+#include "HTML.hpp"
 
 extern "C"
 {
@@ -22,6 +23,7 @@ class Server
 public:
 	lua_State* L;
 	vector<Route*> Routes;
+	vector<HTML*> Pages, Elements;
 	string Page404 = "<h1>Error 404</h1><p>Content not found!</p>";
 
 	bool IsRunning() { return running; }

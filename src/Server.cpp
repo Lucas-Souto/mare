@@ -50,6 +50,8 @@ void Server::ResponseTo(int connection, char (&buffer)[BUFFER_SIZE])
 	Route* route = Route::FindMatchingRoute(request->Target, &Routes);
 	string response = "";
 
+	printf("%s %s %s\n", request->Method.c_str(), request->URL.c_str(), request->Protocol.c_str());
+
 	if (route != nullptr)
 	{
 		int targetLength = request->Target->Path.size();
@@ -70,7 +72,6 @@ void Server::ResponseTo(int connection, char (&buffer)[BUFFER_SIZE])
 
 	if (response == "") response = buildResponse(404, "text/html", Page404);
 
-	printf("%s %s %s\n", request->Method.c_str(), request->URL.c_str(), request->Protocol.c_str());
 	send(connection, response.c_str(), response.size(), 0);
 
 	delete request;

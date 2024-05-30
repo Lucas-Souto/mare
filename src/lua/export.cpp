@@ -1,6 +1,8 @@
 #include "export.hpp"
 #include "../Server.hpp"
 #include "../http/utils.hpp"
+#include "../LinkedPair.hpp"
+#include "../HTML.hpp"
 
 extern "C"
 {
@@ -90,6 +92,62 @@ extern "C"
 		return 1;
 	}
 
-	int lRender(lua_State* L) { return 0; }
-	int lElement(lua_State* L){ return 0; }
+	LinkedPair* fillTable(lua_State* L, int index, std::string prefix, LinkedPair* dict)
+	{
+		lua_pushnil(L);
+
+		while (lua_next(L, index) != 0)	
+		{
+			std::string key(lua_tostring(L, -2));
+			
+			if (lua_istable(L, -1)) dict = fillTable(L, lua_gettop(L), prefix + key + ".", dict);
+			else
+			{
+				std::string value;
+
+				if (lua_isboolean(L, -1)) value = lua_toboolean(L, -1) ? "true" : "false";
+				else value = lua_tostring(L, -1);
+
+				dict->Set(VAR_INDICATOR + prefix + key + VAR_INDICATOR, value);
+
+				dict->Next = new LinkedPair();
+				dict = dict->Next;
+			}
+
+			lua_pop(L, 1);
+		}
+
+		return dict;
+	}
+
+	int lRender(lua_State* L)
+	{
+		if (lua_isstring(L, 1))
+		{
+			const char* path = lua_tostring(L, 1);
+
+			if (lua_istable(L, 2))
+			{
+				LinkedPair* dict = new LinkedPair();
+
+				fillTable(L, 2, "", dict);
+				lua_pushstring(L, render(path, dict).c_str());
+			}
+			else luaL_argerror(L, 2, "\"data\" precisa ser uma tabela!");
+		}
+		else luaL_argerror(L, 1, "\"path\" precisa ser uma string!");
+
+		return 1;
+	}
+	int lElement(lua_State* L)
+	{
+		if (lua_isstring(L, 1))
+		{
+			if (lua_isstring(L, 2)) Server::Get()->Elements.push_back(new HTML(lua_tostring(L, 1), getBody(lua_tostring(L, 2))));
+			else luaL_argerror(L, 2, "\"path\" precisa ser uma string!");
+		}
+		else luaL_argerror(L, 1, "\"tag\" precisa ser uma string!");
+
+		return 0;
+	}
 }

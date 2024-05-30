@@ -1,6 +1,9 @@
 #include "utils.hpp"
 #include <fstream>
 #include <filesystem>
+#include <list>
+#include "../HTML.hpp"
+#include "../Server.hpp"
 
 string statusText(int status)
 {
@@ -176,4 +179,30 @@ string buildResponse(int status, string contentType, string content)
 {
 	return "HTTP/1.1 " + to_string(status) + " " + statusText(status) + "\r\nContent-Type: " + contentType +
 		"\r\nContent-Length: " + to_string(content.size()) + "\r\nConnection: Closed\r\n\r\n" + content;
+}
+
+string render(const char* filePath, LinkedPair* dict)
+{
+	string output = "";
+	HTML* page = getHTML(filePath, filePath, Server::Get()->Pages, true);
+	int pieceLength;
+	list<bool> show;
+
+	for (string piece : page->Pieces)
+	{
+		pieceLength = piece.size();
+
+		if (piece[0] == VAR_INDICATOR && piece.back() == VAR_INDICATOR) output += dict->GetValue(piece);
+		else if (piece[0] == STATEMENT_INDICATOR && piece.back() == STATEMENT_INDICATOR)
+		{
+			if (piece == "#endif#") show.pop_back();
+			else if (pieceLength > 5 && piece[1] == 'i' && piece[2] == 'f' && piece[3] == ' ')
+			{
+				show.push_back(dict->GetValue(VAR_INDICATOR + piece.substr(4, pieceLength - 5) + VAR_INDICATOR) == "true");
+			}
+		}
+		else if (show.size() == 0 || show.back()) output += piece;
+	}
+
+	return output;
 }
