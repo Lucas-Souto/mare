@@ -1,5 +1,5 @@
 CC = clang++ -std=c++20
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -static
 
 LUA_CFLAGS = -I/usr/local/include
 LUA_LDLIBS = -L/usr/local/lib -llua -lm
