@@ -4,11 +4,11 @@
 #include "Server.hpp"
 #include <string.h>
 
-string getTag(int start, string content, int length)
+string getTag(int start, string content)
 {
 	string result = "";
 
-	for (int i = start; i < length; i++)
+	for (int i = start; i < content.size(); i++)
 	{
 		if (content[i] == ' ' || content[i] == '>' || content[i] == '/') break;
 		else result += content[i];
@@ -17,19 +17,19 @@ string getTag(int start, string content, int length)
 	return result;
 }
 
-int getTagArgs(string tag, int tagLength, int currentIndex, string content, int length, LinkedPair* dict)
+int getTagArgs(string tag, int currentIndex, string content, LinkedPair* dict)
 {
 	LinkedPair* currentPair = dict;
 	bool readingContent, readingValue;
 
-	for (; currentIndex < length; currentIndex++)
+	for (; currentIndex < content.size(); currentIndex++)
 	{
 		if (readingContent)
 		{
-			if (content[currentIndex] == '<' && length - 1 > currentIndex + tagLength + 1
-				&& content.substr(currentIndex, tagLength + 3) == "</" + tag + ">")
+			if (content[currentIndex] == '<' && content.size() - 1 > currentIndex + tag.size() + 1
+				&& content.substr(currentIndex, tag.size() + 3) == "</" + tag + ">")
 			{
-				currentIndex += tagLength + 3;
+				currentIndex += tag.size() + 3;
 
 				break;
 			}
@@ -38,7 +38,7 @@ int getTagArgs(string tag, int tagLength, int currentIndex, string content, int 
 		}
 		else
 		{
-			if (content[currentIndex] == '/' && length - 1 > currentIndex && content[currentIndex + 1] == '>')
+			if (content[currentIndex] == '/' && content.size() - 1 > currentIndex && content[currentIndex + 1] == '>')
 			{
 				currentIndex++;
 
@@ -68,7 +68,7 @@ int getTagArgs(string tag, int tagLength, int currentIndex, string content, int 
 			{
 				if (currentPair->Value == "")
 				{
-					if (length - 1 > currentIndex && content[currentIndex] == '"')
+					if (content.size() - 1 > currentIndex && content[currentIndex] == '"')
 					{
 						currentPair->Value += content[currentIndex + 1];
 						currentIndex++;
@@ -76,7 +76,7 @@ int getTagArgs(string tag, int tagLength, int currentIndex, string content, int 
 				}
 				else
 				{
-					if (content[currentIndex] == SLASH && length - 1 > currentIndex && content[currentIndex + 1] == '"')
+					if (content[currentIndex] == SLASH && content.size() - 1 > currentIndex && content[currentIndex + 1] == '"')
 					{
 						currentIndex++;
 						currentPair->Value += content[currentIndex];
@@ -96,14 +96,50 @@ int getTagArgs(string tag, int tagLength, int currentIndex, string content, int 
 	return currentIndex;
 }
 
-int elementIntoPieces(HTML* root, string tag, int tagLength, vector<string> element, int currentIndex, string content, int length)
+int elementIntoPieces(HTML* root, string tag, vector<string> element, int currentIndex, string content)
 {
 	LinkedPair* dict = new LinkedPair();
-	currentIndex = getTagArgs(tag, tagLength, currentIndex, content, length, dict);
+	currentIndex = getTagArgs(tag, currentIndex, content, dict);
+	bool readingVar;
+	string add, current;
 
 	for (string ePiece : element)
 	{
-		if (ePiece[0] == VAR_INDICATOR && ePiece[ePiece.size() - 1] == VAR_INDICATOR) root->Pieces.push_back(dict->GetValue(ePiece));
+		if (ePiece[0] == VAR_INDICATOR && ePiece[ePiece.size() - 1] == VAR_INDICATOR)
+		{
+			add = dict->GetValue(ePiece);
+			readingVar = false;
+			current = "";
+			
+			for (int i = 0; i < add.size(); i++)
+			{
+				if (add[i] == SLASH && add.size() - 1 > i && add[i + 1])
+				{
+					i++;
+					current += add[i];
+				}
+				else if (add[i] == VAR_INDICATOR)
+				{
+					if (!readingVar)
+					{
+						root->Pieces.push_back(current);
+
+						current = VAR_INDICATOR;
+					}
+					else
+					{
+						root->Pieces.push_back(current + VAR_INDICATOR);
+
+						current = "";
+					}
+
+					readingVar = !readingVar;
+				}
+				else current += add[i];
+			}
+
+			if (current != "") root->Pieces.push_back(current);
+		}
 		else root->Pieces.push_back(ePiece);
 	}
 
@@ -113,13 +149,12 @@ int elementIntoPieces(HTML* root, string tag, int tagLength, vector<string> elem
 HTML::HTML(const char* id, string content)
 {
 	ID = id;
-	int length = content.size();
 	char reading = C_NULL;
 	string current;
 
-	for (int i = 0; i < length; i++)
+	for (int i = 0; i < content.size(); i++)
 	{
-		if (content[i] == SLASH && length - 1 > i)
+		if (content[i] == SLASH && content.size() - 1 > i)
 		{
 			if (content[i + 1] == SLASH || content[i + 1] == VAR_INDICATOR || content[i + 1] == STATEMENT_INDICATOR)
 			{
@@ -143,23 +178,22 @@ HTML::HTML(const char* id, string content)
 				reading = C_NULL;
 			}
 		}
-		else if (reading == C_NULL && content[i] == '<' && length - 1 > i && content[i + 1] != '/')
+		else if (reading == C_NULL && content[i] == '<' && content.size() - 1 > i && content[i + 1] != '/')
 		{
-			string tag = getTag(i + 1, content, length);
-			int tagLength = tag.size();
-			HTML* element = tagLength > 0 ? getHTML(tag.c_str(), nullptr, Server::Get()->Elements, false) : nullptr;
+			string tag = getTag(i + 1, content);
+			HTML* element = tag.size() > 0 ? getHTML(tag.c_str(), nullptr, Server::Get()->Elements, false) : nullptr;
 
 			if (element != nullptr)
 			{
 				Pieces.push_back(current);
 
-				current = C_NULL;
-				i = elementIntoPieces(this, tag, tagLength, element->Pieces, i + tagLength + 1, content, length);
+				current = "";
+				i = elementIntoPieces(this, tag, element->Pieces, i + tag.size() + 1, content);
 			}
 			else 
 			{
-				current += content.substr(i, 1 + tagLength);
-				i += tagLength;
+				current += content.substr(i, 1 + tag.size());
+				i += tag.size();
 			}
 		}
 		else current += content[i];

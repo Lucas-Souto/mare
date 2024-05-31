@@ -7,11 +7,14 @@
 	<body>
 		<h1>$test.other$</h1>
 		<p id="test">Opa!!! $test.number$</p>
-		<card title="Card 1" image="https://picsum.photos/200">Texto content</card>
-		<card title="Card 2" content="Content embutido" />
+		<card title="$title$ - 1" image="https://picsum.photos/200">Texto content</card>
+		<card title="$title$ - 2" content="Content embutido" />
 
-		#if check#
-			<p>Check é verdadeiro!</p>
-		#endif#
+#if check#
+		<p>Check é verdadeiro!</p>
+#if subcheck#
+		<p>Subcheck é verdadeiro!</p>
+#endif#
+#endif#
 	</body>
 </html>

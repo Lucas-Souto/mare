@@ -1,17 +1,22 @@
 init();
 listen(20);
 
+element("card", "card.html");
+
+local index = render("index.html", 
+{
+	title = "Meu título",
+	test = { number = 128, other = "sus" },
+	check = true,
+	subcheck = false
+});
+
 route("/", function(request)
 	return
 	{
 		status = 200,
 		content_type = "text/html",
-		body = render("index.html", 
-		{
-			title = "Meu título",
-			test = { number = 128, other = "sus" },
-			check = true
-		})
+		body = index
 	};
 end);
 
@@ -24,7 +29,5 @@ end);
 maskroute("/assets", "public");
 
 route404("<h1>Nothing</h1>");
-
-element("card", "card.html");
 
 print("Tudo pronto!");

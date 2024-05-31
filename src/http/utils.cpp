@@ -187,21 +187,27 @@ string render(const char* filePath, LinkedPair* dict)
 	HTML* page = getHTML(filePath, filePath, Server::Get()->Pages, true);
 	int pieceLength;
 	list<bool> show;
+	bool previous;
 
 	for (string piece : page->Pieces)
 	{
 		pieceLength = piece.size();
 
-		if (piece[0] == VAR_INDICATOR && piece.back() == VAR_INDICATOR) output += dict->GetValue(piece);
-		else if (piece[0] == STATEMENT_INDICATOR && piece.back() == STATEMENT_INDICATOR)
+		if (piece[0] == STATEMENT_INDICATOR && piece.back() == STATEMENT_INDICATOR)
 		{
 			if (piece == "#endif#") show.pop_back();
 			else if (pieceLength > 5 && piece[1] == 'i' && piece[2] == 'f' && piece[3] == ' ')
 			{
-				show.push_back(dict->GetValue(VAR_INDICATOR + piece.substr(4, pieceLength - 5) + VAR_INDICATOR) == "true");
+				previous = !show.empty() ? show.back() : true;
+
+				show.push_back(dict->GetValue(VAR_INDICATOR + piece.substr(4, pieceLength - 5) + VAR_INDICATOR) == "true" && previous);
 			}
 		}
-		else if (show.size() == 0 || show.back()) output += piece;
+		else if (show.empty() || show.back())
+		{
+			if (piece[0] == VAR_INDICATOR && piece.back() == VAR_INDICATOR) output += dict->GetValue(piece);
+			else output += piece;
+		}
 	}
 
 	return output;
