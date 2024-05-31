@@ -7,7 +7,7 @@ A Maré é feita pensando em sites que são apenas front-end, mas que fariam bom
 Este framework não foi planejado para sites como redes sociais ou sites que requerem certa segurança de informações.
 
 # Quais são os usos ideais?
-- Sites de portfólio, com listas baseadas em array e páginas dedicadas.
+- Sites de portfólio, páginas dedicadas e com elementos baseados em objetos.
 - Sites que aplicam localização em seus textos.
 - Sites que simulam interação com back-end.
 - Jogos de enigma baseados na web.
