@@ -143,7 +143,21 @@ extern "C"
 	{
 		if (lua_isstring(L, 1))
 		{
-			if (lua_isstring(L, 2)) Server::Get()->Elements.push_back(new HTML(lua_tostring(L, 1), getBody(lua_tostring(L, 2))));
+			if (lua_isstring(L, 2))
+			{
+				HTML* element = new HTML(lua_tostring(L, 1), getBody(lua_tostring(L, 2)));
+
+				if (lua_gettop(L) > 2)
+				{
+					if (lua_isstring(L, 3)) element->Style = lua_tostring(L, 3);
+					else luaL_argerror(L, 3, "\"style\" precisa ser uma string!");
+
+					if (lua_isstring(L, 4)) element->Script = lua_tostring(L, 4);
+					else luaL_argerror(L, 4, "\"script\" precisa ser uma string!");
+				}
+
+				Server::Get()->Elements.push_back(element);
+			}
 			else luaL_argerror(L, 2, "\"path\" precisa ser uma string!");
 		}
 		else luaL_argerror(L, 1, "\"tag\" precisa ser uma string!");

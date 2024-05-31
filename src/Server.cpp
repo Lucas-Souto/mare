@@ -10,6 +10,8 @@ Server* Server::instance = nullptr;
 Server::Server()
 {
 	Server::instance = this;
+
+	Elements.push_back(new HTML("title", "<title>$content$</title>"));
 }
 
 void Server::Init(int port)
@@ -73,8 +75,6 @@ void Server::ResponseTo(int connection, char (&buffer)[BUFFER_SIZE])
 	if (response == "") response = buildResponse(404, "text/html", Page404);
 
 	send(connection, response.c_str(), response.size(), 0);
-
-	delete request;
 }
 
 void Server::ListenClients()

@@ -2,6 +2,7 @@
 #define HTML_HPP
 #include <string>
 #include <vector>
+#include <list>
 
 using namespace std;
 
@@ -12,7 +13,8 @@ class HTML
 {
 public:
     const char* ID;
-    vector<string> Pieces;
+	string Style = "", Script = "";
+    list<string> Pieces, Import;
 
     HTML(const char* id, const string content);
 };

@@ -1,7 +1,7 @@
 init();
 listen(20);
 
-element("card", "card.html");
+element("card", "card.html", "/assets/card.css", "");
 
 local index = render("index.html", 
 {

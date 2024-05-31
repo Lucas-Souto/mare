@@ -96,7 +96,7 @@ int getTagArgs(string tag, int currentIndex, string content, LinkedPair* dict)
 	return currentIndex;
 }
 
-int elementIntoPieces(HTML* root, string tag, vector<string> element, int currentIndex, string content)
+int elementIntoPieces(HTML* root, string tag, list<string> element, int currentIndex, string content)
 {
 	LinkedPair* dict = new LinkedPair();
 	currentIndex = getTagArgs(tag, currentIndex, content, dict);
@@ -149,8 +149,11 @@ int elementIntoPieces(HTML* root, string tag, vector<string> element, int curren
 HTML::HTML(const char* id, string content)
 {
 	ID = id;
+	auto titleIndex = -1;
 	char reading = C_NULL;
 	string current;
+	LinkedPair* tagDict = new LinkedPair();
+	LinkedPair* currentTag = tagDict;
 
 	for (int i = 0; i < content.size(); i++)
 	{
@@ -187,6 +190,18 @@ HTML::HTML(const char* id, string content)
 			{
 				Pieces.push_back(current);
 
+				if (tag == "title") titleIndex = Pieces.size();
+				else if (tagDict->GetValue(tag) == KEY_NOT_FOUND)
+				{
+					if (!element->Style.empty()) Import.push_back("<link rel=\"stylesheet\" href=\"" + element->Style + "\" />");
+
+					if (!element->Script.empty()) Import.push_back("<script rel=\"text/javascript\" src=\"" + element->Script + "\" defer></script>");
+					
+					currentTag->Key = tag;
+					currentTag->Next = new LinkedPair();
+					currentTag = currentTag->Next;
+				}
+
 				current = "";
 				i = elementIntoPieces(this, tag, element->Pieces, i + tag.size() + 1, content);
 			}
@@ -200,6 +215,15 @@ HTML::HTML(const char* id, string content)
 	}
 
 	if (current != "") Pieces.push_back(current);
+
+	if (titleIndex != -1)
+	{
+		auto it = Pieces.begin();
+
+		advance(it, titleIndex);
+
+		for (string link : Import) Pieces.insert(it, link);
+	}
 }
 
 HTML* getHTML(const char* id, const char* filePath, vector<HTML*> list, bool createIfNotExists)
