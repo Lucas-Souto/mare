@@ -190,8 +190,7 @@ HTML::HTML(const char* id, string content)
 			{
 				Pieces.push_back(current);
 
-				if (tag == "title") titleIndex = Pieces.size();
-				else if (tagDict->GetValue(tag) == KEY_NOT_FOUND)
+				if (tagDict->GetValue(tag) == KEY_NOT_FOUND)
 				{
 					if (!element->Style.empty()) Import.push_back("<link rel=\"stylesheet\" href=\"" + element->Style + "\" />");
 
@@ -207,6 +206,8 @@ HTML::HTML(const char* id, string content)
 			}
 			else 
 			{
+				if (tag == "title") titleIndex = Pieces.size();
+
 				current += content.substr(i, 1 + tag.size());
 				i += tag.size();
 			}
