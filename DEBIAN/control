@@ -3,3 +3,4 @@ Version: 1.1.0
 Maintainer: Lucas Souto
 Architecture: all
 Description: Maré é um framework para a criação de páginas front-end com a ajuda da lua.
+Depends: libssl-dev, liblua5.4-dev
