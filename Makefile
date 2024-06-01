@@ -9,7 +9,7 @@ INCLUDE = bin/main.o bin/Server.o bin/LinkedPair.o bin/HTML.o \
 	bin/lua/export.o bin/lua/import.o
 
 build: $(INCLUDE)
-	$(CC) $^ $(CFLAGS) -o bin/mare.so $(LUA_CFLAGS) $(LUA_LDLIBS) -lssl -lcrypto
+	$(CC) $^ $(CFLAGS) -o bin/mare $(LUA_CFLAGS) $(LUA_LDLIBS) -lssl -lcrypto
 
 bin/main.o: src/main.cpp
 	$(CC) -c $^ -o $@
@@ -44,4 +44,4 @@ target:
 	mkdir -p bin/lua
 
 clean:
-	rm -f bin/*.o bin/http/*.o bin/lua/*.o bin/mare.so
+	rm -f bin/*.o bin/http/*.o bin/lua/*.o bin/mare
