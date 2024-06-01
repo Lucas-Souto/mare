@@ -1,4 +1,7 @@
-<h1 align="center"><img src="logo.png" alt="Maré - Logo"/></h1>
+<h1 align="center">
+    <img src="logo.png" alt="Maré - Logo"/>
+</h1>
+
 **Maré** é um framework para a criação de páginas front-end com a ajuda da lua.<br>
 Com ela, você poderá criar páginas com reutilização de componentes e preenchimento automático de conteúdo.<br>
 
