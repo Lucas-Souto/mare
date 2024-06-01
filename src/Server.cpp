@@ -127,6 +127,7 @@ void Server::InitLua()
 	lua_register(L, "getbody", lGetBody);
 	lua_register(L, "render", lRender);
 	lua_register(L, "element", lElement);
+	lua_register(L, "clear", lClear);
 	
 	int lua = luaL_loadfile(L, "init.lua");
 

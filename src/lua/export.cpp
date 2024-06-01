@@ -164,4 +164,12 @@ extern "C"
 
 		return 0;
 	}
+
+	int lClear(lua_State* L)
+	{
+		Server::Get()->Pages.clear();
+		printf("Cachê limpo!\n");
+
+		return 0;
+	}
 }

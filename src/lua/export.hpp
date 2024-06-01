@@ -14,5 +14,6 @@ extern "C"
 	int lGetBody(lua_State* L);
 	int lRender(lua_State* L);
 	int lElement(lua_State* L);
+	int lClear(lua_State* L);
 }
 #endif
