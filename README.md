@@ -1,8 +1,7 @@
 <h1 align="center">
   <img src="logo.png" alt="Maré - Logo"/>
+  <a href="https://github.com/Lucas-Souto/mare/wiki">Wiki</a>
 </h1>
-
-# Maré
 **Maré** é um framework para a criação de páginas front-end com a ajuda da lua.<br>
 Com ela, você poderá criar páginas com reutilização de componentes e preenchimento automático de conteúdo.<br>
 
