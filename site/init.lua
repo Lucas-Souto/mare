@@ -1,33 +1,48 @@
-init(0, true);
-listen(20);
+init();
+listen(128);
 
-element("card", "card.html", "/assets/card.css", "");
+require("elements.define");
 
-local index = render("index.html", 
-{
-	title = "Meu título",
-	test = { number = 128, other = "sus" },
-	check = true,
-	subcheck = false
-});
-
+-- Rotas
+maskroute("/css", "public/css");
+maskroute("/js", "public/js");
+maskroute("/img", "public/img")
 route("/", function(request)
-	return
+	clear();
+
+	return 
 	{
 		status = 200,
 		content_type = "text/html",
-		body = index
+		body = render("pages/index.html", 
+		{
+			updated = "01/06/2024",
+			show_secret = false
+		})
 	};
 end);
 
-route("users", function(request)
-	if (#request.route_args == 0) then return nil; end;
+local subpages =
+{
+	about = "pages/about.html",
+	madewith = "pages/madewith.html"
+}
 
-	return { status = 200, content_type = "text/html", body = "<h1>Opa!" .. tostring(request.route_args[1]) };
+route("/getcard", function(request)
+	if #request.route_args == 0 then return nil;
+	else
+		subpage = subpages[request.route_args[1]];
+
+		if (subPage ~= nil) then return nil;
+		else
+			clear();
+
+			return
+			{
+				status = 200,
+				content_type = "text/html",
+				body = render(subpage, {})
+			}
+		end
+	end
 end);
-
-maskroute("/assets", "public");
-
-route404("<h1>Nothing</h1>");
-
-print("Tudo pronto!");

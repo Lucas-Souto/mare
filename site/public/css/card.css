@@ -1,0 +1,61 @@
+.card
+{
+	cursor: pointer;
+	display: flex;
+	overflow: hidden;
+
+	border-radius: 5px;
+	background-color: color-mix(in srgb, var(--main) 10%, transparent);
+}
+
+.card:nth-child(even)
+{
+	text-align: right;
+	flex-direction: row-reverse;
+}
+
+.card-image
+{
+	position: relative;
+	width: 180px;
+	height: 180px;
+	overflow: hidden;
+}
+
+.card-image img
+{
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	height: 180px;
+	aspect-ratio: 1;
+
+	transition: .25s linear;
+	transform: translate(-50%, -50%);
+}
+
+.card:hover .card-image img
+{
+	transform: translate(-50%, -50%) scale(1.25);
+}
+
+.card-text
+{
+	display: flex;
+	flex-direction: column;
+	gap: .1em;
+
+	padding: 1em;
+}
+
+.card-text h2
+{
+	font-size: 1.75em;
+
+	margin: 0;
+}
+
+.card-text p
+{
+	margin: 0;
+}

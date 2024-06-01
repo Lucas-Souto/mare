@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="/css/index.css" />
+	<title>Maré - Seu Front-End com Lua</title>
+</head>
+<body>
+#if show_secret#
+	<h1>O universo é um holograma.</h1>
+#endif#
+	<div id="container">
+		<div id="left" class="side">
+			<div id="info">
+				<img id="logo" src="/img/logo.png" alt="Maré - Logo" />
+				<p id="updated">Atualizado em: $updated$</p>
+
+				<card card-id="about" title="Sobre a Maré" image="/img/logo.png">Uma ferramenta para a criação de sites front-end com lua.</card>
+				<card card-id="madewith" title="Feito com a Maré" image="/img/logo.png">
+					Sites feitos com a Maré.<br />
+					Não tem nada nessa lista. É só para ter dois cards mesmo.
+				</card>
+			</div>
+		</div>
+
+		<div id="subpage" class="side"></div>
+	</div>
+</body>
+</html>
