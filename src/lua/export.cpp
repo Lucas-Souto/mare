@@ -10,7 +10,7 @@ extern "C"
 	{
 		if (Server::Get()->IsRunning()) return 0;
 		
-		Server::Get()->Init(lua_tointeger(L, 1));
+		Server::Get()->Init(lua_tointeger(L, 1), lua_toboolean(L, 2));
 
 		return 0;
 	}

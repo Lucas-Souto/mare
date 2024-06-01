@@ -1,5 +1,5 @@
 CC = clang++ -std=c++20
-CFLAGS = -g -Wall -static
+CFLAGS = -g -Wall
 
 LUA_CFLAGS = -I/usr/local/include
 LUA_LDLIBS = -L/usr/local/lib -llua -lm
@@ -9,7 +9,7 @@ INCLUDE = bin/main.o bin/Server.o bin/LinkedPair.o bin/HTML.o \
 	bin/lua/export.o bin/lua/import.o
 
 build: $(INCLUDE)
-	$(CC) $^ $(CFLAGS) -o bin/build $(LUA_CFLAGS) $(LUA_LDLIBS)
+	$(CC) $^ $(CFLAGS) -o bin/mare $(LUA_CFLAGS) $(LUA_LDLIBS) -lssl -lcrypto
 
 bin/main.o: src/main.cpp
 	$(CC) -c $^ -o $@
@@ -44,4 +44,4 @@ target:
 	mkdir -p bin/lua
 
 clean:
-	rm -f bin/*.o bin/http/*.o bin/lua/*.o bin/build
+	rm -f bin/*.o bin/http/*.o bin/lua/*.o bin/mare

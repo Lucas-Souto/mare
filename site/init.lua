@@ -1,4 +1,4 @@
-init();
+init(0, true);
 listen(20);
 
 element("card", "card.html", "/assets/card.css", "");

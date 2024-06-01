@@ -8,6 +8,8 @@
 #include "http/Route.hpp"
 #include "http/Request.hpp"
 #include "HTML.hpp"
+// SSL
+#include <openssl/ssl.h>
 
 extern "C"
 {
@@ -31,18 +33,19 @@ public:
 
 	Server();
 
-	void Init(int port);
+	void Init(int port, bool https);
 	void StartListen(int backlog);
 	void Close();
 	void InitLua();
 
 private:
 	int sockfd;
-	bool running;
+	bool running, https;
 	sockaddr_in sockaddr;
+	SSL_CTX* ctx;
 	static Server* instance;
 
 	void ListenClients();
-	void ResponseTo(int connection, char (&buffer)[BUFFER_SIZE]);
+	void ResponseTo(int connection, SSL* ssl, char (&buffer)[BUFFER_SIZE]);
 };
 #endif
