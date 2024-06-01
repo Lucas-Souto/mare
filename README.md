@@ -1,5 +1,5 @@
 <h1 align="center">
-    <img src="logo.png" alt="Maré - Logo"/>
+    <img src="site/public/img/logo.png" alt="Maré - Logo"/>
 </h1>
 
 **Maré** é um framework para a criação de páginas front-end com a ajuda da lua.<br>

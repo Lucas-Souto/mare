@@ -17,7 +17,7 @@ int main()
 
 	printf("Pressione CTRL + C para encerrar o servidor.\n");
 	
-	while (server->IsRunning());
+	while (server->IsRunning()){}
 
 	printf("\nEncerrando servidor...\n");
 
