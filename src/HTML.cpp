@@ -196,6 +196,11 @@ HTML::HTML(const char* id, string content)
 					if (!element->Style.empty()) Import.push_back("<link rel=\"stylesheet\" href=\"" + element->Style + "\" />");
 
 					if (!element->Script.empty()) Import.push_back("<script rel=\"text/javascript\" src=\"" + element->Script + "\" defer></script>");
+
+					if (!element->Import.empty())
+					{
+						for (string link : element->Import) Import.push_front(link);
+					}
 					
 					currentTag->Key = tag;
 					currentTag->Next = new LinkedPair();
