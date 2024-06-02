@@ -12,6 +12,8 @@ Server* Server::instance = nullptr;
 Server::Server()
 {
 	Server::instance = this;
+
+	Elements.push_back(new HTML("title", "<title>$content$</title>"));
 }
 
 void Server::Init(int port, bool https)
