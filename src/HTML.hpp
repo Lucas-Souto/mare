@@ -13,10 +13,12 @@ class HTML
 {
 public:
     const char* ID;
-	string Style = "", Script = "";
     list<string> Pieces, Import;
 
     HTML(const char* id, const string content);
+
+	void AddCSS(string css);
+	void AddJS(string js);
 };
 
 HTML* getHTML(const char* id, const char* filePath, const vector<HTML*> list, bool createIfNotExists);

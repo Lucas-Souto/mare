@@ -149,11 +149,47 @@ extern "C"
 
 				if (lua_gettop(L) > 2)
 				{
-					if (lua_isstring(L, 3)) element->Style = lua_tostring(L, 3);
-					else luaL_argerror(L, 3, "\"style\" precisa ser uma string!");
+					if (lua_isstring(L, 3)) element->AddCSS(lua_tostring(L, 3));
+					else if (lua_istable(L, 3))
+					{
+						lua_len(L, 3);
 
-					if (lua_isstring(L, 4)) element->Script = lua_tostring(L, 4);
-					else luaL_argerror(L, 4, "\"script\" precisa ser uma string!");
+						int length = lua_tointeger(L, -1);
+
+						lua_pop(L, 1);
+
+						for (int i = 1; i <= length; i++)
+						{
+							lua_geti(L, 3, i);
+
+							if (lua_isstring(L, -1)) element->AddCSS(lua_tostring(L, -1));
+							else luaL_argerror(L, 3, "Os elementos de \"style\" precisam ser strings!");
+
+							lua_pop(L, 1);
+						}
+					}
+					else if (!lua_isnil(L, 3)) luaL_argerror(L, 3, "\"style\" precisa ser uma string!");
+
+					if (lua_isstring(L, 4)) element->AddJS(lua_tostring(L, 4));
+					else if (lua_istable(L, 4))
+					{
+						lua_len(L, 4);
+
+						int length = lua_tointeger(L, -1);
+
+						lua_pop(L, 1);
+
+						for (int i = 1; i <= length; i++)
+						{
+							lua_geti(L, 4, i);
+
+							if (lua_isstring(L, -1)) element->AddJS(lua_tostring(L, -1));
+							else luaL_argerror(L, 4, "Os elementos de \"script\" precisam ser strings!");
+
+							lua_pop(L, 1);
+						}
+					}
+					else if (!lua_isnil(L, 4)) luaL_argerror(L, 4, "\"script\" precisa ser uma string!");
 				}
 
 				Server::Get()->Elements.push_back(element);

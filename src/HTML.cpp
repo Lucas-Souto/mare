@@ -146,6 +146,28 @@ int elementIntoPieces(HTML* root, string tag, list<string> element, int currentI
 	return currentIndex;
 }
 
+void pushNonExisting(list<string>* a, list<string>* b)
+{
+	bool found;
+
+	for (string add : *b)
+	{
+		found = false;
+
+		for (string check : *a)
+		{
+			if (check == add)
+			{
+				found = true;
+
+				break;
+			}
+		}
+
+		if (!found) a->push_back(add);
+	}
+}
+
 HTML::HTML(const char* id, string content)
 {
 	ID = id;
@@ -193,14 +215,7 @@ HTML::HTML(const char* id, string content)
 				if (tag == "title") titleIndex = Pieces.size();
 				else if (tagDict->GetValue(tag) == KEY_NOT_FOUND)
 				{
-					if (!element->Style.empty()) Import.push_back("<link rel=\"stylesheet\" href=\"" + element->Style + "\" />");
-
-					if (!element->Script.empty()) Import.push_back("<script rel=\"text/javascript\" src=\"" + element->Script + "\" defer></script>");
-
-					if (!element->Import.empty())
-					{
-						for (string link : element->Import) Import.push_front(link);
-					}
+					if (!element->Import.empty()) pushNonExisting(&Import, &element->Import);
 					
 					currentTag->Key = tag;
 					currentTag->Next = new LinkedPair();
@@ -229,6 +244,16 @@ HTML::HTML(const char* id, string content)
 
 		for (string link : Import) Pieces.insert(it, link);
 	}
+}
+
+void HTML::AddCSS(string css)
+{
+	if (css.length() > 0) Import.push_back("<link rel=\"stylesheet\" href=\"" + css + "\" />");
+}
+
+void HTML::AddJS(string js)
+{
+	if (js.length() > 0) Import.push_back("<script rel=\"text/javascript\" src=\"" + js + "\" defer></script>");
 }
 
 HTML* getHTML(const char* id, const char* filePath, vector<HTML*> list, bool createIfNotExists)
