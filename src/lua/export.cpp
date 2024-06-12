@@ -163,7 +163,7 @@ extern "C"
 							lua_geti(L, 3, i);
 
 							if (lua_isstring(L, -1)) element->AddCSS(lua_tostring(L, -1));
-							else luaL_argerror(L, 3, "Os elementos de \"style\" precisam ser strings!");
+							else luaL_argerror(L, 3, "Os elementos de \"styles\" precisam ser strings!");
 
 							lua_pop(L, 1);
 						}
@@ -184,7 +184,7 @@ extern "C"
 							lua_geti(L, 4, i);
 
 							if (lua_isstring(L, -1)) element->AddJS(lua_tostring(L, -1));
-							else luaL_argerror(L, 4, "Os elementos de \"script\" precisam ser strings!");
+							else luaL_argerror(L, 4, "Os elementos de \"scripts\" precisam ser strings!");
 
 							lua_pop(L, 1);
 						}
