@@ -41,19 +41,23 @@ Route::Route(string url, string directory) : Path(generatePath(url)), Callback(-
 
 Route* Route::FindMatchingRoute(Route* compare, vector<Route*>* from)
 {
-	int match = 0, lastMatch = 0;// Quantidade de subrotas que deram match
+	int match, lastMatch = 0;// Quantidade de subrotas que deram match
 	Route* result = nullptr;
 	int compareLength = compare->Path.size(), routeLength;
 
 	for (Route* route : *from)
 	{
+		match = 0;
 		routeLength = route->Path.size();
 
-		if (compare->Path[0] == "/" && route->Path[0] == "/")
+		if (compare->Path[0] == "/")
 		{
-			result = route;
+			if (route->Path[0] == "/")
+			{
+				result = route;
 
-			break;
+				break;
+			}
 		}
 		else if (routeLength > compareLength) continue;
 		else for (int i = 0; i < compareLength; i++)
